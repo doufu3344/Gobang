@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Gobang</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="undo">undo</string>
+    <string name="back">back</string>
+    <string name="touch_begin">Touch the screen to begin</string>
+    <string name="quit_confirm">Are you sure to quit?</string>
+    <string name="player">young man</string>
+    <string name="quit_yes">Yes</string>
+    <string name="quit_no">No</string>
+    <string name="go_on_playing">Go On Playing!</string>
+    <string name="undo_comfirm">Are you sure to undo?</string>
+    <string name="bad_boy">You are a bad boy!</string>
+    <string name="good_boy">You did the right thing!</string>
+    <string name="return_confirm">Are you sure to back?</string>
+    <string name="win_black">the black is win!</string>
+    <string name="win_white">the white is win!</string>
+    <string name="youlost">you are the lost!</string>
+    <string name="youwin">you are the winner!</string>
+    <string name="gameover">Gome Over</string>
+    <string name="watchboard">Look or Back</string>
+    <string name="replay">Replay</string>
+    <string name="replay_confirm">Are you sure to replay?</string>
+    <string name="replay_tip">The game is restarted!</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="welcome">Welcome</string>
+    <string name="hum_hum"> Human VS Human </string>
+    <string name="hum_com">Human VS Android</string>
+    <string name="hum_hum_blue"> Use Bluetooth  </string>
+    <string name="exit">      Exit      </string>
+    <string name="select">Please Select a Mode:</string>
+
+</resources>
