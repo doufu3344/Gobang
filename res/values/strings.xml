@@ -27,10 +27,10 @@
     <string name="replay_tip">The game is restarted!</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="welcome">Welcome</string>
-    <string name="hum_hum"> Human VS Human </string>
+    <string name="hum_hum">Human VS Human</string>
     <string name="hum_com">Human VS Android</string>
-    <string name="hum_hum_blue"> Use Bluetooth  </string>
-    <string name="exit">      Exit      </string>
+    <string name="hum_hum_blue">Use Bluetooth</string>
+    <string name="exit">Exit</string>
     <string name="select">Please Select a Mode:</string>
     <string name="select_device">select a device to connect</string>
 	<string name="title_paired_devices">Paired Devices</string>
@@ -40,6 +40,15 @@
     <string name="scanning">scanning for devices</string>
     <string name="none_paired">No devices have been paired</string>
     <string name="none_found">No devices found</string>
-    <string name="whiche_is_connected">is connected!</string>
+    <string name="which_is_connecting">is connectting</string>
+    <string name="reselect_device">error,please select again</string>
+    <string name="unable_connect">Unable to connect device</string>
+    <string name="connection_lost">Device connection was lost</string>
+    <string name="bluetooth_unavailable">Bluetooth is not available</string>
+	<string name="not_connected">You are not connected to a device</string>
+    <string name="title_connected_to">connected to</string>
+	<string name="title_connecting">connecting&#8230;</string>
+	<string name="title_not_connected">No connection</string>
+	
     
 </resources>

@@ -4,6 +4,7 @@ import java.util.Set;
 
 import com.df.mainActivity.R;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -29,11 +30,12 @@ import android.widget.AdapterView.OnItemClickListener;
  * by the user, the MAC address of the device is sent back to the parent
  * Activity in the result Intent.
  */
+@SuppressLint("HandlerLeak")
 public class DeviceListActivity extends Activity {
     // Debugging
     private static final String TAG = "DeviceListActivity";
     private static final boolean D = true;
-
+    
     // Return Intent extra
     public static String EXTRA_DEVICE_ADDRESS = "device_address";
 
@@ -42,14 +44,18 @@ public class DeviceListActivity extends Activity {
     private ArrayAdapter<String> mPairedDevicesArrayAdapter;
     private ArrayAdapter<String> mNewDevicesArrayAdapter;
     
+    public static Activity activity;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        
         // Setup the window
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.device_list);
 
+        activity = this;
+        
         // Set result CANCELED incase the user backs out
         setResult(Activity.RESULT_CANCELED);
 
@@ -161,15 +167,36 @@ public class DeviceListActivity extends Activity {
 
             // Get the device MAC address, which is the last 17 chars in the View
             String info = ((TextView) v).getText().toString();
-            String address = info.substring(info.length() - 17);
+            
+            String address = "";
+            if(info.length() > 17)
+            	address = info.substring(info.length() - 17);
+            boolean IsAddress = true;
+            if(address.length()==17){
+            	char[] tmp= new char[5];
+            	int j = 0;
+            	for(int i=2; i<17; i = i+3)
+            		tmp[j++] = address.charAt(i);
+            	for(int i=0; i<5; ++i)
+            		if(tmp[i] != ':')
+            			IsAddress = false;
+            }
+            else{
+            	IsAddress = false;
+            }
 
-            // Create the result Intent and include the MAC address
             Intent intent = new Intent();
-            intent.putExtra(EXTRA_DEVICE_ADDRESS, address);
+            if(IsAddress){
+            	// Create the result Intent and include the MAC address
+            	intent.putExtra(EXTRA_DEVICE_ADDRESS, address);
 
-            // Set result and finish this Activity
-            setResult(Activity.RESULT_OK, intent);
-            finish();
+            	// Set result and finish this Activity
+            }
+            else{
+            	intent.putExtra(EXTRA_DEVICE_ADDRESS, "error");
+            }
+        	setResult(Activity.RESULT_OK, intent);
+        	finish();
         }
     };
 

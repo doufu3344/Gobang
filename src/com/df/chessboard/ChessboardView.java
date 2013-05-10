@@ -198,10 +198,10 @@ public class ChessboardView extends View{
 	private float Sub2CoorY(int b){//脚标转坐标
 		return b*pointSize+YOffset-pointSize/2;
 	}
-	private int Coor2SubX(float x){//坐标转脚标
+	public int Coor2SubX(float x){//坐标转脚标
 		return (int)(x-Left)/pointSize;
 	}
-	private int Coor2SubY(float y){//坐标转脚标
+	public int Coor2SubY(float y){//坐标转脚标
 		return (int)(y-Top)/pointSize;
 	}
 

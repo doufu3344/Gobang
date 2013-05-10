@@ -36,7 +36,6 @@ public class MainActivity extends Activity implements OnClickListener{
 	
 	@Override
 	public void onClick(View v) {
-		// TODO Auto-generated method stub
 
 		if(v == btn_hum_com){
 			Intent hum_comIntent = new Intent(MainActivity.this, ChessboardACtivity.class);

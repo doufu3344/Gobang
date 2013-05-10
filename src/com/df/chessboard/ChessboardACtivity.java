@@ -1,9 +1,15 @@
 package com.df.chessboard;
 
+import java.util.Random;
+
+import com.df.bluetooth.BluetoothService;
 import com.df.mainActivity.R;
 import com.df.player.Player;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -11,6 +17,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
@@ -21,13 +28,14 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.widget.Toast;
 
+@SuppressLint("HandlerLeak")
 public class ChessboardACtivity extends Activity implements OnClickListener{
 
 	private static int Who;//当前下棋人
 	private static int Winner;//胜出者
 	private static boolean IsBegin;
 	private static int Mode = 0; //0-人机,1-人人联网,2-人人
-	private static int First = 0;//0-0黑子先,1-白子先
+	private static int IsFirst = 0;//0-我先,1-对手先
 	public static int Look = 0;//1-查看棋盘
 	public static int IsTip = 0;//比赛结果对话框，设置此标记解决显示两次的问题。1已经提示，0未提示
 	public static int who_undo = 0;
@@ -36,15 +44,39 @@ public class ChessboardACtivity extends Activity implements OnClickListener{
     private static final int REQUEST_CONNECT_DEVICE = 1;
     private static final int REQUEST_ENABLE_BT = 2;
 
-    private BluetoothAdapter mBluetoothAdapter = null;
+    // Message types sent from the BluetoothChatService Handler
+    public static final int MESSAGE_STATE_CHANGE = 1;
+    public static final int MESSAGE_READ = 2;
+    public static final int MESSAGE_WRITE = 3;
+    public static final int MESSAGE_DEVICE_NAME = 4;
+    public static final int MESSAGE_TOAST = 5;
+    
+    // Key names received from the BluetoothChatService Handler
+    public static final String DEVICE_NAME = "device_name";
+    public static final String TOAST = "toast";
+    
+    // Name of the connected device
+    private String mConnectedDeviceName = null;
+    private String message_read = " ";
+    private String message_write = " ";
 
-	
+    private BluetoothAdapter mBluetoothAdapter = null;
+    private BluetoothService mBluetoothService = null;
+
+    private TextView mTitle;
+    
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
 		setContentView(R.layout.chessboard);
-
-		Who = First;
+        getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.custom_title);
+        mTitle = (TextView) findViewById(R.id.title_left_text);
+        mTitle.setText(R.string.app_name);
+        mTitle = (TextView) findViewById(R.id.title_right_text);
+		
+		
+		Who = IsFirst;
 		Winner = -1;
 	
 		btn_undo = (Button) this.findViewById(R.id.undo);
@@ -61,8 +93,9 @@ public class ChessboardACtivity extends Activity implements OnClickListener{
 		if(Mode ==1){
 			
 	        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+	        
 	        if (mBluetoothAdapter == null) {
-	            Toast.makeText(this, "Bluetooth is not available", Toast.LENGTH_LONG).show();
+	            Toast.makeText(this, getString(R.string.bluetooth_unavailable), Toast.LENGTH_LONG).show();
 	            finish();
 	            return;
 	        }
@@ -72,11 +105,73 @@ public class ChessboardACtivity extends Activity implements OnClickListener{
 	            Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
 	            startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
 	        }
+	        else{
+				if(mBluetoothService == null)
+					mBluetoothService = new BluetoothService(this, mHandler);
+	        }
 			Intent serverIntent = new Intent(this, com.df.bluetooth.DeviceListActivity.class);
 			startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
 		}
 		
 	}
+
+	private final Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+            case MESSAGE_STATE_CHANGE:
+                switch (msg.arg1) {
+                case BluetoothService.STATE_CONNECTED:
+                    if(Mode == 1){
+                    	mTitle.setText(R.string.title_connected_to);
+                    	mTitle.append(" ");
+                    	mTitle.append(mConnectedDeviceName);
+            			com.df.bluetooth.DeviceListActivity.activity.finish();
+                    }
+                    //mConversationArrayAdapter.clear();
+                    break;
+                case BluetoothService.STATE_CONNECTING:
+                    if(Mode == 1){
+                    	mTitle.setText(R.string.title_connecting);
+            			com.df.bluetooth.DeviceListActivity.activity.finish();
+                    }
+                    break;
+                case BluetoothService.STATE_LISTEN:
+                case BluetoothService.STATE_NONE:
+                    if(Mode == 1)
+                    	mTitle.setText(R.string.title_not_connected);
+                    break;
+                }
+                break;
+            case MESSAGE_DEVICE_NAME:
+                // save the connected device's name
+                mConnectedDeviceName = msg.getData().getString(DEVICE_NAME);
+                Toast.makeText(getApplicationContext(), "Connected to "
+                               + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
+                break;
+            case MESSAGE_TOAST:
+            	String str= "";
+            	if(msg.getData().getString(TOAST).equals("connect_error"))
+            		str = getString(R.string.unable_connect);
+            	if(msg.getData().getString(TOAST).equals("connection_lost"))
+            		str = getString(R.string.connection_lost);
+                Toast.makeText(getApplicationContext(), str, Toast.LENGTH_SHORT).show();
+                break;
+	        case MESSAGE_WRITE:
+	            byte[] writeBuf = (byte[]) msg.obj;
+	            // construct a string from the buffer
+	            String writeMessage = new String(writeBuf);
+	            message_write = writeMessage;
+	            break;
+	        case MESSAGE_READ:
+	            byte[] readBuf = (byte[]) msg.obj;
+	            // construct a string from the valid bytes in the buffer
+	            String readMessage = new String(readBuf, 0, msg.arg1);
+	            message_read = readMessage;
+	            break;
+            }
+        }
+    };
 	
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
@@ -85,15 +180,28 @@ public class ChessboardACtivity extends Activity implements OnClickListener{
             if (resultCode == Activity.RESULT_OK) {
                 // Get the device MAC address
                 String address = data.getExtras().getString(com.df.bluetooth.DeviceListActivity.EXTRA_DEVICE_ADDRESS);
-                // Get the BLuetoothDevice object
-                BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
+                	// Get the BLuetoothDevice object
+               	if(!address.equals("error")){
+               		BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
 
-                // Attempt to connect to the device
-//              mChatService.connect(device);
-
-                String str = device.getName()+" "+getString(R.string.whiche_is_connected);
-                Toast.makeText(ChessboardACtivity.this, str, Toast.LENGTH_LONG).show();
-                
+               		// Attempt to connect to the device
+               		mBluetoothService.connect(device);
+               		
+               		String str = device.getName()+" "+getString(R.string.which_is_connecting);
+               		
+               		String thisname = BluetoothAdapter.getDefaultAdapter().getName();
+               		
+               		if(device.getName().compareTo(thisname)<0)
+               			IsFirst = 0;
+               		else
+               			IsFirst = 1;
+               		
+               		Toast.makeText(ChessboardACtivity.this, str, Toast.LENGTH_LONG).show();
+               	}
+               	else{
+               		Toast.makeText(ChessboardACtivity.this, getString(R.string.reselect_device), Toast.LENGTH_LONG).show();
+               		finish();
+               	}
             }
         }
 	}
@@ -190,7 +298,7 @@ public class ChessboardACtivity extends Activity implements OnClickListener{
 						IsTip =0;
 						Winner = -1;
 						IsBegin = false;
-						Who = First;
+						Who = IsFirst;
 						view.Initboard();
 						btn_replay.setVisibility(View.INVISIBLE);
 						Toast.makeText(ChessboardACtivity.this, R.string.replay_tip, Toast.LENGTH_LONG).show();
@@ -211,10 +319,11 @@ public class ChessboardACtivity extends Activity implements OnClickListener{
 	}
 	
 	public int setFirst(int first){
-		First = first;
-		return First;
+		IsFirst = first;
+		return IsFirst;
 	}
     
+	@SuppressLint("NewApi")
 	@Override
 	public boolean onTouchEvent(final MotionEvent event){
 		
@@ -252,26 +361,75 @@ public class ChessboardACtivity extends Activity implements OnClickListener{
 						}
 				}		
 			}//人机模式		
-			if(Mode == 1){
+			if(Mode == 1){				
+				Who = IsFirst;
 				if(Who==0){
-					if(view.InsertChess(event.getRawX(),event.getRawY(),Who)){
+					if(message_read.length()==5){
+						int who = message_read.charAt(0);
+						int a = Integer.parseInt((String) message_read.subSequence(1, 2));
+						int b = Integer.parseInt((String) message_read.subSequence(3, 4));
+						view.InsertChess(a,b,who);
+						view.Refresh();
+					}
+					if(view.InsertChess(event.getRawX(),event.getRawY(),IsFirst)){
+						int a = view.Coor2SubX(event.getRawX());
+						int b = view.Coor2SubY(event.getRawY());				
+						String sa = "";
+						if(a<10)
+							sa = "0"+String.valueOf(a);
+						else
+							sa = String.valueOf(a);
+						String sb = "";
+						if(b<10)
+							sb = "0"+String.valueOf(b);
+						else
+							sb = String.valueOf(b);
+										
+						sendMessage(String.valueOf(0)+sa+sb);
+						
 						if((Winner = view.GetWin()) != 0){
 							IsBegin = true;
 							Who =1;
 						}
 					}
 				}
-				Player player = new Player();
-				player.SetList(view.GetList());
-				
-				while(Winner == -1 && Who ==1){//While语句测试时用，当真正ai算法开发后可以改if，不改也可
-					player.computerCoor(Who,Mode);
-					if(view.InsertChess(Player.Geta(),Player.Getb(),Who))
+				else{
+					if(!message_read.isEmpty()){
+						int who = message_read.charAt(0);
+						int a = Integer.parseInt((String) message_read.subSequence(1, 2));
+						int b = Integer.parseInt((String) message_read.subSequence(3, 4));
+						view.InsertChess(a,b,who);
+						view.Refresh();
+					}
+						
+					if(view.InsertChess(event.getRawX(),event.getRawY(),IsFirst)){
+						int a = view.Coor2SubX(event.getRawX());
+						int b = view.Coor2SubY(event.getRawY());				
+						String sa = "";
+						if(a<10)
+							sa = "0"+String.valueOf(a);
+						else
+							sa = String.valueOf(a);
+						String sb = "";
+						if(b<10)
+							sb = "0"+String.valueOf(b);
+						else
+							sb = String.valueOf(b);
+										
+						sendMessage(String.valueOf(0)+sa+sb);
+						
 						if((Winner = view.GetWin()) != 0){
 							IsBegin = true;
-							Who =0;		
+							Who =1;
 						}
+					}
 				}
+
+					
+				TextView tv = (TextView)this.findViewById(R.id.textView2);
+				tv.setText(String.valueOf(IsFirst)+message_read);
+				
+				
 			}
 			if(Mode == 2){
 				if(view.InsertChess(event.getRawX(),event.getRawY(),Who)){
@@ -303,7 +461,7 @@ public class ChessboardACtivity extends Activity implements OnClickListener{
 					public void onClick(DialogInterface dialog, int which) {
 						IsTip =0;
 						Winner = -1;
-						Who = First;
+						Who = IsFirst;
 						IsBegin = false;
 						btn_replay.setVisibility(View.INVISIBLE);
 						view.Initboard();
@@ -327,5 +485,62 @@ public class ChessboardACtivity extends Activity implements OnClickListener{
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
+	
+	
+	
+	
+	
+    @Override
+    public synchronized void onResume() {
+        super.onResume();
+
+        // Performing this check in onResume() covers the case in which BT was
+        // not enabled during onStart(), so we were paused to enable it...
+        // onResume() will be called when ACTION_REQUEST_ENABLE activity returns.
+        if (mBluetoothService != null) {
+            // Only if the state is STATE_NONE, do we know that we haven't started already
+            if (mBluetoothService.getState() == BluetoothService.STATE_NONE) {
+              // Start the Bluetooth chat services
+              mBluetoothService.start();
+            }
+        }
+    }
+    @Override
+    public synchronized void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // Stop the Bluetooth chat services
+        if (mBluetoothService != null) mBluetoothService.stop();
+    }
+    private void sendMessage(String message) {
+        // Check that we're actually connected before trying anything
+        if (mBluetoothService.getState() != BluetoothService.STATE_CONNECTED) {
+            Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Check that there's actually something to send
+        if (message.length() > 0) {
+            // Get the message bytes and tell the BluetoothChatService to write
+            byte[] send = message.getBytes();
+            mBluetoothService.write(send);
+
+            // Reset out string buffer to zero and clear the edit text field
+            //mOutStringBuffer.setLength(0);
+        }
+    }
+	
+	
+	
+	
 	
 }
