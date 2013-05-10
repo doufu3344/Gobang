@@ -1,7 +1,5 @@
 package com.df.chessboard;
 
-import java.util.Random;
-
 import com.df.bluetooth.BluetoothService;
 import com.df.mainActivity.R;
 import com.df.player.Player;
@@ -34,6 +32,7 @@ public class ChessboardACtivity extends Activity implements OnClickListener{
 	private static int Who;//当前下棋人
 	private static int Winner;//胜出者
 	private static boolean IsBegin;
+	private static boolean one = true;
 	private static int Mode = 0; //0-人机,1-人人联网,2-人人
 	private static int IsFirst = 0;//0-我先,1-对手先
 	public static int Look = 0;//1-查看棋盘
@@ -58,7 +57,7 @@ public class ChessboardACtivity extends Activity implements OnClickListener{
     // Name of the connected device
     private String mConnectedDeviceName = null;
     private String message_read = " ";
-    private String message_write = " ";
+    //private String message_write = " ";
 
     private BluetoothAdapter mBluetoothAdapter = null;
     private BluetoothService mBluetoothService = null;
@@ -157,17 +156,43 @@ public class ChessboardACtivity extends Activity implements OnClickListener{
             		str = getString(R.string.connection_lost);
                 Toast.makeText(getApplicationContext(), str, Toast.LENGTH_SHORT).show();
                 break;
-	        case MESSAGE_WRITE:
+	/*        case MESSAGE_WRITE:
 	            byte[] writeBuf = (byte[]) msg.obj;
 	            // construct a string from the buffer
 	            String writeMessage = new String(writeBuf);
 	            message_write = writeMessage;
-	            break;
+	            break;*/
 	        case MESSAGE_READ:
 	            byte[] readBuf = (byte[]) msg.obj;
 	            // construct a string from the valid bytes in the buffer
 	            String readMessage = new String(readBuf, 0, msg.arg1);
 	            message_read = readMessage;
+				if(message_read.length()==7){
+					String data[] = new String[3];
+					data = message_read.split("-", 3);
+					int who = Integer.parseInt(data[0]);
+					Who = who==0?1:0;
+					int a = Integer.parseInt(data[1]);
+					int b = Integer.parseInt(data[2]);
+					ChessboardView view = (ChessboardView)ChessboardACtivity.this.findViewById(R.id.view1);
+					view.InsertChess(a,b,who);
+					view.Refresh();
+					if((Winner = view.GetWin()) != 0){
+						IsBegin = true;
+					}
+					Check();
+					
+					if(one)
+						IsFirst = Who;
+					one = false;
+					
+					TipView tipview = (TipView)ChessboardACtivity.this.findViewById(R.id.tipview);
+					tipview.SetWho(Who);
+					tipview.Refresh();
+					
+					TextView textv = (TextView)ChessboardACtivity.this.findViewById(R.id.textView1);
+					textv.setText(null);
+				}
 	            break;
             }
         }
@@ -195,6 +220,11 @@ public class ChessboardACtivity extends Activity implements OnClickListener{
                			IsFirst = 0;
                		else
                			IsFirst = 1;
+    				Who = IsFirst;
+
+					
+				TextView tv = (TextView)this.findViewById(R.id.textView2);
+				tv.setText(message_read+"|First:"+String.valueOf(IsFirst));
                		
                		Toast.makeText(ChessboardACtivity.this, str, Toast.LENGTH_LONG).show();
                	}
@@ -251,9 +281,7 @@ public class ChessboardACtivity extends Activity implements OnClickListener{
 						if(Mode == 0)
 							who_undo=0;
 						else if(Mode == 1)
-//*************************************
-							who_undo = 0;
-//***************************************
+							who_undo = IsFirst;
 						else
 							who_undo = Who==0?1:0;
 						Who = view.undo(who_undo);
@@ -301,6 +329,8 @@ public class ChessboardACtivity extends Activity implements OnClickListener{
 						Who = IsFirst;
 						view.Initboard();
 						btn_replay.setVisibility(View.INVISIBLE);
+						message_read = " ";
+						one = true;
 						Toast.makeText(ChessboardACtivity.this, R.string.replay_tip, Toast.LENGTH_LONG).show();
 					}
 				}).
@@ -362,74 +392,56 @@ public class ChessboardACtivity extends Activity implements OnClickListener{
 				}		
 			}//人机模式		
 			if(Mode == 1){				
-				Who = IsFirst;
-				if(Who==0){
-					if(message_read.length()==5){
-						int who = message_read.charAt(0);
-						int a = Integer.parseInt((String) message_read.subSequence(1, 2));
-						int b = Integer.parseInt((String) message_read.subSequence(3, 4));
-						view.InsertChess(a,b,who);
-						view.Refresh();
-					}
-					if(view.InsertChess(event.getRawX(),event.getRawY(),IsFirst)){
-						int a = view.Coor2SubX(event.getRawX());
-						int b = view.Coor2SubY(event.getRawY());				
-						String sa = "";
-						if(a<10)
-							sa = "0"+String.valueOf(a);
-						else
-							sa = String.valueOf(a);
-						String sb = "";
-						if(b<10)
-							sb = "0"+String.valueOf(b);
-						else
-							sb = String.valueOf(b);
-										
-						sendMessage(String.valueOf(0)+sa+sb);
-						
-						if((Winner = view.GetWin()) != 0){
-							IsBegin = true;
-							Who =1;
-						}
-					}
-				}
-				else{
-					if(!message_read.isEmpty()){
-						int who = message_read.charAt(0);
-						int a = Integer.parseInt((String) message_read.subSequence(1, 2));
-						int b = Integer.parseInt((String) message_read.subSequence(3, 4));
-						view.InsertChess(a,b,who);
-						view.Refresh();
-					}
-						
-					if(view.InsertChess(event.getRawX(),event.getRawY(),IsFirst)){
-						int a = view.Coor2SubX(event.getRawX());
-						int b = view.Coor2SubY(event.getRawY());				
-						String sa = "";
-						if(a<10)
-							sa = "0"+String.valueOf(a);
-						else
-							sa = String.valueOf(a);
-						String sb = "";
-						if(b<10)
-							sb = "0"+String.valueOf(b);
-						else
-							sb = String.valueOf(b);
-										
-						sendMessage(String.valueOf(0)+sa+sb);
-						
-						if((Winner = view.GetWin()) != 0){
-							IsBegin = true;
-							Who =1;
-						}
-					}
-				}
+				//Who = IsFirst;
+				if(IsFirst==0 && Who == 0){
 
-					
-				TextView tv = (TextView)this.findViewById(R.id.textView2);
-				tv.setText(String.valueOf(IsFirst)+message_read);
-				
-				
+					if(view.InsertChess(event.getRawX(),event.getRawY(),Who)){
+						one = false;
+						int a = view.Coor2SubX(event.getRawX());
+						int b = view.Coor2SubY(event.getRawY());				
+						String sa = "";
+						if(a<10)
+							sa = "0"+String.valueOf(a);
+						else
+							sa = String.valueOf(a);
+						String sb = "";
+						if(b<10)
+							sb = "0"+String.valueOf(b);
+						else
+							sb = String.valueOf(b);
+										
+						sendMessage(String.valueOf(Who)+"-"+sa+"-"+sb);
+						
+						if((Winner = view.GetWin()) != 0){
+							IsBegin = true;
+							Who =1;
+						}
+					}
+				}
+				else if(IsFirst==1 && Who == 1 && !one){
+
+					if(view.InsertChess(event.getRawX(),event.getRawY(),Who)){
+						int a = view.Coor2SubX(event.getRawX());
+						int b = view.Coor2SubY(event.getRawY());				
+						String sa = "";
+						if(a<10)
+							sa = "0"+String.valueOf(a);
+						else
+							sa = String.valueOf(a);
+						String sb = "";
+						if(b<10)
+							sb = "0"+String.valueOf(b);
+						else
+							sb = String.valueOf(b);
+										
+						sendMessage(String.valueOf(Who)+"-"+sa+"-"+sb);
+						
+						if((Winner = view.GetWin()) != 0){
+							IsBegin = true;
+							Who =0;
+						}
+					}
+				}				
 			}
 			if(Mode == 2){
 				if(view.InsertChess(event.getRawX(),event.getRawY(),Who)){
@@ -440,6 +452,19 @@ public class ChessboardACtivity extends Activity implements OnClickListener{
 			}//人人对战模式
 		}
 		
+		Check();
+
+		TipView tv = (TipView)ChessboardACtivity.this.findViewById(R.id.tipview);
+		tv.Refresh();
+		if(IsBegin == true){
+			TextView textv = (TextView)this.findViewById(R.id.textView1);
+			textv.setText(null);
+			btn_replay.setVisibility(View.VISIBLE);
+		}
+		return true;
+	}
+	
+	private void Check(){
 		if(Winner != -1 && IsTip ==0 && Look != 1){//显示结果对话框
 			String win;
 			if(Winner == 0)
@@ -454,6 +479,7 @@ public class ChessboardACtivity extends Activity implements OnClickListener{
 						Look =1;
 						IsTip =0;
 						IsBegin = true;
+						message_read = " ";
 					}
 				}).
 				setNegativeButton(R.string.replay, new DialogInterface.OnClickListener() {
@@ -463,21 +489,17 @@ public class ChessboardACtivity extends Activity implements OnClickListener{
 						Winner = -1;
 						Who = IsFirst;
 						IsBegin = false;
+						message_read = " ";
+						one = true;
 						btn_replay.setVisibility(View.INVISIBLE);
+						ChessboardView view = (ChessboardView)ChessboardACtivity.this.findViewById(R.id.view1);
 						view.Initboard();
 					}
 			}).create();
 			dialog.show();
 			IsTip = 1;
 		}
-		if(IsBegin == true){
-			TextView tv = (TextView)this.findViewById(R.id.textView1);
-			tv.setText(null);
-			btn_replay.setVisibility(View.VISIBLE);
-		}
-		return true;
 	}
-	
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
