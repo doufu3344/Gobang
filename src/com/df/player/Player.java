@@ -1,7 +1,5 @@
 package com.df.player;
 
-import java.util.Random;
-
 import com.df.computer.computer;
 
 public class Player {
@@ -15,16 +13,6 @@ public class Player {
 			com.df.computer.computer.computePositon(Who);//电脑计算坐标
 			a = com.df.computer.computer.Geta();
 			b = com.df.computer.computer.Getb();
-		}
-		if(Mode == 1){
-
-			
-			Random ran =new Random(System.currentTimeMillis()); 
-			a = ran.nextInt(15);
-			b = ran.nextInt(15);
-			
-			
-			
 		}
 	}
 	

@@ -49,6 +49,18 @@
     <string name="title_connected_to">connected to</string>
 	<string name="title_connecting">connecting&#8230;</string>
 	<string name="title_not_connected">No connection</string>
-	
-    
+	<string name="ask_undo_title">ask to undo</string>
+	<string name="ask_undo_message">the other side ask to undo,agree?</string>
+	<string name="agree">Agree</string>
+	<string name="disagree">Disagree</string>
+	<string name="giveup">Give up</string>
+	<string name="agree_toast">The other side agree to undo</string>
+	<string name="disagree_toast">The other side disgree to undo</string>
+    <string name="quit_toast">The other side is not playing</string>
+    <string name="wait_agree">Waiting for agreement</string>
+    <string name="first_toast">please take the first step</string>
+    <string name="second_toast">please wait the first step</string>
+    <string name="set_first_ti">Set First</string>
+    <string name="is_you_first">Set you go First?</string>
+	<string name="set_other_first">You have set the other go first</string>
 </resources>

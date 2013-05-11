@@ -55,13 +55,21 @@
         android:text="@string/replay" />
 
      <TextView
-         android:id="@+id/textView2"
+         android:id="@+id/blacktime"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:layout_above="@+id/replay"
-         android:layout_centerHorizontal="true"
-         android:layout_marginBottom="139dp"
-         android:text="Medium Text"
+         android:layout_alignLeft="@+id/tipview"
+         android:layout_below="@+id/tipview"
+         android:text=""
+         android:textAppearance="?android:attr/textAppearanceMedium" />
+
+     <TextView
+         android:id="@+id/whitetime"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignRight="@+id/tipview"
+         android:layout_below="@+id/tipview"
+         android:text=""
          android:textAppearance="?android:attr/textAppearanceMedium" />
 
 </RelativeLayout>

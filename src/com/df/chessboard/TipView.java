@@ -17,6 +17,7 @@ import android.view.ViewGroup.LayoutParams;
 public class TipView extends View{
 
 	private int Who;
+	private int IsFirst;
 	private int pointSize;
 	private int convert_p;
 	private final Paint paint;
@@ -37,6 +38,10 @@ public class TipView extends View{
 		Mode=mode;
 		return Mode;
 	}
+	public int SetFirst(int first){
+		IsFirst=first;
+		return IsFirst;
+	}
 	
 	public int SetpointSize(int pointSize){
 		this.pointSize = pointSize;
@@ -53,12 +58,24 @@ public class TipView extends View{
 		lp.height = 3*pointSize;
 		view.setLayoutParams(lp);
 	
-		bitmap1 = BitmapFactory.decodeResource(getResources(), R.drawable.player1);
-		if(Mode == 0){
-			bitmap2 = BitmapFactory.decodeResource(getResources(), R.drawable.android);
-		}else
-			bitmap2 = BitmapFactory.decodeResource(getResources(), R.drawable.player2);
-		
+		if(Mode != 1){
+			bitmap1 = BitmapFactory.decodeResource(getResources(), R.drawable.player1);
+			if(Mode == 0){
+				bitmap2 = BitmapFactory.decodeResource(getResources(), R.drawable.android);
+			}else
+				bitmap2 = BitmapFactory.decodeResource(getResources(), R.drawable.player2);
+		}
+		else{
+			if(IsFirst == 0){
+				bitmap1 = BitmapFactory.decodeResource(getResources(), R.drawable.player1);
+				bitmap2 = BitmapFactory.decodeResource(getResources(), R.drawable.player2_bt);
+			}
+			else{
+				bitmap1 = BitmapFactory.decodeResource(getResources(), R.drawable.player1_bt);
+				bitmap2 = BitmapFactory.decodeResource(getResources(), R.drawable.player2);
+
+			}
+		}
 		
 		convert_p = pointSize/3;
 		Rect rect1 = new Rect(0,0,3*pointSize,3*pointSize);
