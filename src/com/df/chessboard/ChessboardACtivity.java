@@ -230,15 +230,22 @@ public class ChessboardACtivity extends Activity implements OnClickListener{
     };
     
     private void ReadMessage(){
-		if(message_read.length()==7){
-			String data[] = new String[3];
-			data = message_read.split("-", 3);
+    	/*if(message_read.length()==8){
+			String data[] = new String[2];//data[0]-blacktime
+			data = message_read.split("-", 2);
+			
+    	}
+    	//else */
+    	if(message_read.length()==19){
+			String data[] = new String[5];
+			data = message_read.split("-", 5);
 			int who = Integer.parseInt(data[0]);
 			Who = who==0?1:0;
 			int a = Integer.parseInt(data[1]);
 			int b = Integer.parseInt(data[2]);
 			ChessboardView view = (ChessboardView)ChessboardACtivity.this.findViewById(R.id.view1);
 			view.InsertChess(a,b,who);
+			IsRun = true;
 			view.Refresh();
 			if((Winner = view.GetWin()) != 0){
 				IsBegin = true;
@@ -256,6 +263,13 @@ public class ChessboardACtivity extends Activity implements OnClickListener{
 			tipview.SetWho(Who);
 			tipview.SetFirst(IsFirst);
 			tipview.Refresh();
+			
+			String time_b[] = new String[2];
+			time_b = data[3].split(":",2);
+			String time_w[] = new String[2];
+			time_w = data[4].split(":",2);
+			t_black = Integer.parseInt(time_b[0])*60+Integer.parseInt(time_b[1]);
+			t_white = Integer.parseInt(time_w[0])*60+Integer.parseInt(time_w[1]);
 		}
 		else if(message_read.length()==5){//悔棋
 			String data[] = new String[2];
@@ -636,7 +650,7 @@ public class ChessboardACtivity extends Activity implements OnClickListener{
 						else
 							sb = String.valueOf(b);
 										
-						sendMessage(String.valueOf(Who)+"-"+sa+"-"+sb);
+						sendMessage(String.valueOf(Who)+"-"+sa+"-"+sb+"-"+convertTime(t_black)+"-"+convertTime(t_white));
 						
 						if((Winner = view.GetWin()) != 0){
 							IsBegin = true;
@@ -647,6 +661,7 @@ public class ChessboardACtivity extends Activity implements OnClickListener{
 				else if(IsFirst==1 && Who == 1 && !one){
 
 					if(view.InsertChess(event.getRawX(),event.getRawY(),Who)){
+						//IsRun = true;
 						int a = view.Coor2SubX(event.getRawX());
 						int b = view.Coor2SubY(event.getRawY());				
 						String sa = "";
@@ -660,14 +675,14 @@ public class ChessboardACtivity extends Activity implements OnClickListener{
 						else
 							sb = String.valueOf(b);
 										
-						sendMessage(String.valueOf(Who)+"-"+sa+"-"+sb);
+						sendMessage(String.valueOf(Who)+"-"+sa+"-"+sb+"-"+convertTime(t_black)+"-"+convertTime(t_white));
 						
 						if((Winner = view.GetWin()) != 0){
 							IsBegin = true;
 							Who =0;
 						}
 					}
-				}				
+				}
 			}
 			if(Mode == 2){
 				if(view.InsertChess(event.getRawX(),event.getRawY(),Who)){
