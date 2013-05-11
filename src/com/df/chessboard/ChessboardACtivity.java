@@ -204,7 +204,7 @@ public class ChessboardACtivity extends Activity implements OnClickListener{
             case MESSAGE_DEVICE_NAME:
                 // save the connected device's name
                 mConnectedDeviceName = msg.getData().getString(DEVICE_NAME);
-                Toast.makeText(getApplicationContext(), "Connected to "
+                Toast.makeText(getApplicationContext(), getString(R.string.title_connected_to)
                                + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
                 setFirst();
                 break;
@@ -262,6 +262,8 @@ public class ChessboardACtivity extends Activity implements OnClickListener{
 			TipView tipview = (TipView)ChessboardACtivity.this.findViewById(R.id.tipview);
 			tipview.SetWho(Who);
 			tipview.SetFirst(IsFirst);
+			tipview.SetpointSize(view.GetpointSize());
+			tipview.setVisibility(View.VISIBLE);
 			tipview.Refresh();
 			
 			String time_b[] = new String[2];
@@ -604,13 +606,12 @@ public class ChessboardACtivity extends Activity implements OnClickListener{
 		tipview.Refresh();
 		
 		TimeReplay = false;
-		if(Mode != 1)
-			IsRun = true;
 		
 		if( Winner==-1){//游戏仍在进行没有结束
 			if(Mode == 0){
 				if(Who==0){
 					if(view.InsertChess(event.getRawX(),event.getRawY(),Who)){
+						IsRun = true;
 						if((Winner = view.GetWin()) != 0){
 							IsBegin = true;
 							Who =1;
@@ -635,7 +636,8 @@ public class ChessboardACtivity extends Activity implements OnClickListener{
 				if(IsFirst==0 && Who == 0){
 
 					if(view.InsertChess(event.getRawX(),event.getRawY(),Who)){
-						IsRun = true;
+						if(one)
+							IsRun = true;
 						one = false;
 						int a = view.Coor2SubX(event.getRawX());
 						int b = view.Coor2SubY(event.getRawY());				
@@ -686,6 +688,7 @@ public class ChessboardACtivity extends Activity implements OnClickListener{
 			}
 			if(Mode == 2){
 				if(view.InsertChess(event.getRawX(),event.getRawY(),Who)){
+					IsRun = true;
 					IsBegin = true;
 					if((Winner = view.GetWin()) != 0)
 						Who = Who==0?1:0;

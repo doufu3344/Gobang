@@ -42,6 +42,7 @@ public final class R {
         public static final int paired_devices=0x7f08000c;
         public static final int replay=0x7f080005;
         public static final int textView1=0x7f080004;
+        public static final int textView2=0x7f080014;
         public static final int tipview=0x7f080003;
         public static final int title_left_text=0x7f080008;
         public static final int title_new_devices=0x7f08000d;
@@ -91,6 +92,7 @@ public final class R {
         public static final int none_paired=0x7f060025;
         public static final int not_connected=0x7f06002c;
         public static final int player=0x7f060007;
+        public static final int power=0x7f06003e;
         public static final int quit_confirm=0x7f060006;
         public static final int quit_no=0x7f060009;
         public static final int quit_toast=0x7f060037;

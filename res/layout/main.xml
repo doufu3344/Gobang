@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-	android:background="@drawable/bg_board" >
+    android:background="@drawable/bg_board" >
 
     <TextView
         android:id="@+id/textView1"
@@ -12,7 +12,8 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="25dp"
         android:text="@string/select"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#000000" />
 
     <Button
         android:id="@+id/btn_hum_com"
@@ -53,5 +54,14 @@
             android:layout_marginTop="30dp"
             android:text="@string/exit"
             android:width="200dp" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:text="@string/power"
+            android:textSize="18sp" />
     
 </RelativeLayout>
