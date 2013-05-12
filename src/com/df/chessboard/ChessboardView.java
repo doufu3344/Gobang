@@ -18,7 +18,7 @@ import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 
 public class ChessboardView extends View{
-	
+
 	private static int maxX=15;
     private static int maxY=15;//棋盘大小15＊15
     private static int XOffset;
@@ -36,16 +36,16 @@ public class ChessboardView extends View{
 		pool = new SoundPool(10, AudioManager.STREAM_SYSTEM, 5);
 		sourceid = pool.load(context, R.raw.chess, 0);
 	}
-	
+
 	@SuppressLint("DrawAllocation")
 	@Override  
     protected void onDraw(Canvas canvas){
-		
+
 		paint.setColor(Color.BLACK);
 		DrawChessboardLines(canvas);
 		DrawBlackPiont(canvas);	
 		DrawChess(canvas);
-		
+
 		if(chess.size()>0){//最后一个棋子特殊
 			float a,b;
 			Chess ch= chess.get(chess.size()-1);
@@ -54,7 +54,7 @@ public class ChessboardView extends View{
 			DrawLastBox(canvas,a,b);
 		}
 	}
-	
+
 	@Override  
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {  
 		//设置X、Y座标微调值，目的整个框居中
@@ -62,14 +62,14 @@ public class ChessboardView extends View{
 		XOffset = ((w - (pointSize * maxX)) / 2);  
 		YOffset = pointSize;
 		//YOffset=((h - (pointSize * maxY)) / 2);  
-		
+
 		View view = (View)this.findViewById(R.id.view1);
 		LayoutParams lp = view.getLayoutParams();
 		lp.height = lp.width = w;
 		view.setLayoutParams(lp);
 		Top=view.getTop();
 		Left=view.getLeft();
-		
+
 		//创建棋盘上的线条  
 		Initboard();
 		CreateLines();
@@ -195,7 +195,7 @@ public class ChessboardView extends View{
 		}else
 			return false;
 	}
-	
+
 	public void DrawChess(Canvas canvas){//画棋子
 		for (Chess ch : chess){
 			if(ch.getId() == 1)
@@ -207,7 +207,7 @@ public class ChessboardView extends View{
 			canvas.drawCircle(x, y, pointSize/2, paint);
 		}			
 	}
-	
+
 	private float Sub2CoorX(int a){//脚标转坐标
 		return a*pointSize+XOffset+pointSize/2;
 	}
@@ -225,7 +225,7 @@ public class ChessboardView extends View{
 		Left = location[0];
 		Top = location[1];
 	}
-	
+
     public void Refresh(){//触发onDraw函数
         ChessboardView.this.invalidate();  
     }  

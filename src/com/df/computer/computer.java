@@ -1,5 +1,6 @@
 package com.df.computer;
 
+
 public class computer {
 	
 	private static int a=14;
@@ -11,6 +12,12 @@ public class computer {
 		
 		valueEvaluate value = new valueEvaluate();
 
+		try {
+		    Thread.sleep(2000);
+		}catch(InterruptedException e)
+		{
+		}
+	
 		for(int i=0;i<15;++i)
 			for(int j=0;j<15;++j){
 				if(list[i][j] == 0){

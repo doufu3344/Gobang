@@ -24,7 +24,7 @@
     <string name="replay_confirm">你确定重新开始吗？</string>
     <string name="replay_tip">游戏已重新开始</string>
     <string name="welcome">欢迎</string>
-    <string name="hum_hum">人人对战</string>
+    <string name="hum_hum">双人对战</string>
     <string name="hum_com">人机对战</string>
     <string name="hum_hum_blue">联网对战</string>
     <string name="exit">退出游戏</string>
@@ -32,8 +32,7 @@
     <string name="select_device">选择要连接的设备</string>
 	<string name="title_paired_devices">已配对的设备</string>
 	<string name="title_other_devices">未配对的设备</string>
-    <string name="button_scan">扫描设备</string>
-	<string name="button_make_discoverable">设置本机可发现</string>
+    <string name="button_open_setting">配对新设备</string>
     <string name="scanning">正在扫描</string>
     <string name="none_paired">没有已配对的设备</string>
     <string name="none_found">没有发现设备</string>

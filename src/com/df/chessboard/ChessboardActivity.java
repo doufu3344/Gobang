@@ -94,6 +94,7 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 		Winner = -1;
 		IsTip =0;
 		Look = 0;
+		one = true;
 	
 		btn_undo = (Button) this.findViewById(R.id.undo);
 		btn_back = (Button) this.findViewById(R.id.back);
@@ -253,9 +254,11 @@ public class ChessboardActivity extends Activity implements OnClickListener{
                     }
                     break;
                 case BluetoothService.STATE_LISTEN:
+                	break;
                 case BluetoothService.STATE_NONE:
-                    if(Mode == 1)
+                    if(Mode == 1){
                     	mTitle.setText(R.string.title_not_connected);
+                    }
                     break;
                 }
                 break;
@@ -266,18 +269,29 @@ public class ChessboardActivity extends Activity implements OnClickListener{
                                + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
            		
                 String thisname = BluetoothAdapter.getDefaultAdapter().getName();
+                
                 if(mConnectedDeviceName.compareTo(thisname)<0)
            			IsFirst = 0;
            		else
            			IsFirst = 1;
+        		
+                if(D) Log.d(TAG,"+++IsFirst:"+String.valueOf(IsFirst)+"++++");
+
                 setFirst();
                 break;
             case MESSAGE_TOAST:
             	String str= "";
             	if(msg.getData().getString(TOAST).equals("connect_error"))
             		str = getString(R.string.unable_connect);
-            	if(msg.getData().getString(TOAST).equals("connection_lost"))
+            	if(msg.getData().getString(TOAST).equals("connection_lost")){
             		str = getString(R.string.connection_lost);
+            		if(Mode == 1 && IsConnect){
+                		IsRun = false;
+                     	one = true;
+                     	IsConnect = false;
+                     	finish();
+                     }
+            	}
                 Toast.makeText(getApplicationContext(), str, Toast.LENGTH_SHORT).show();
                 break;
 	        case MESSAGE_READ:
@@ -286,11 +300,14 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 	            String readMessage = new String(readBuf, 0, msg.arg1);
 	            message_read = readMessage;
 	            
+	            if(D) Log.d(TAG,"++message= "+message_read);
+	            
 	            ReadMessage();
 	            
 	            break;
             }
         }
+        
     };
     
     private void ReadMessage(){
@@ -431,7 +448,31 @@ public class ChessboardActivity extends Activity implements OnClickListener{
     }
 
     private void setFirst(){
+		if(D) Log.d(TAG, "+++set Isfirst  OUTOUTOUT  ++++");
+		try {
+		    Thread.sleep(1000);
+		    if(D) Log.d(TAG,"+++sleep 1s++++");
+		}catch(InterruptedException e)
+		{
+			if(D) Log.d(TAG,"+++sleep 1s ferror++++");
+		}
 		if(IsFirst == 1){
+			/*Dialog dialogA = new AlertDialog.Builder(this).
+	    			setIcon(android.R.drawable.btn_star).setTitle(R.string.set_first_ti).setMessage(R.string.is_you_first).
+	    			setPositiveButton(R.string.quit_yes, new DialogInterface.OnClickListener(){
+	    				@Override
+	    				public void onClick(DialogInterface dialog, int which) {
+	    					
+	    				}
+	    			}).
+	    			setNegativeButton(R.string.quit_no, new DialogInterface.OnClickListener() {
+	    				@Override
+	    				public void onClick(DialogInterface dialog, int which) {
+
+	    				}
+	    		}).create();
+	    		dialogA.show();*/
+			if(D) Log.d(TAG, "+++set Isfirst  INININI  ++++");
 			Random ran =new Random(System.currentTimeMillis()); 
 			int a = ran.nextInt(2);
 			if(a == 0){
@@ -466,14 +507,17 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 
 	
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
+		if(D) Log.d(TAG, "+ onActivityResult requestcode +"+String.valueOf(requestCode));
+		if(D) Log.d(TAG, "+ onActivityResult resultcode +"+String.valueOf(resultCode));
+
+		switch (requestCode) {
         case REQUEST_CONNECT_DEVICE:
             // When DeviceListActivity returns with a device to connect
             if (resultCode == Activity.RESULT_OK) {
                 // Get the device MAC address
                 String address = data.getExtras().getString(com.df.bluetooth.DeviceListActivity.EXTRA_DEVICE_ADDRESS);
                 	// Get the BLuetoothDevice object
-               	if(!address.equals("error")){
+               	if(!address.equals("error") && !address.equals("go_pair")){
                		BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
 
                		// Attempt to connect to the device
@@ -484,13 +528,34 @@ public class ChessboardActivity extends Activity implements OnClickListener{
     				Who = IsFirst;
                		
                		Toast.makeText(ChessboardActivity.this, str, Toast.LENGTH_LONG).show();
+               		
+               		setFirst();
+               	}
+               	else if(address.equals("go_pair")){
+               		Intent serverIntent = new Intent(this, com.df.bluetooth.DeviceListActivity.class);
+        			startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
                	}
                	else{
                		Toast.makeText(ChessboardActivity.this, getString(R.string.reselect_device), Toast.LENGTH_LONG).show();
                		finish();
                	}
             }
+            break;
+        case REQUEST_ENABLE_BT:
+            // When the request to enable Bluetooth returns
+            if (resultCode == Activity.RESULT_OK) {
+                // Bluetooth is now enabled, so set up a chat session
+            	mBluetoothService = new BluetoothService(this, mHandler);
+            } else {
+                // User did not enable Bluetooth or an error occured
+                Log.d(TAG, "BT not enabled");
+                Toast.makeText(this, R.string.bluetooth_unavailable, Toast.LENGTH_SHORT).show();
+                finish();
+            }
+            break;
         }
+		
+		if(D) Log.d(TAG, "+ onActivityResult end +"+String.valueOf(resultCode));
 	}
 	
 	protected void keyDialog() {
@@ -670,18 +735,20 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 						}
 					}
 				}
-	
-				Player player = new Player();
-				player.SetList(view.GetList());
+				else if(Who == 1){
+					Player player = new Player();
+					player.SetList(view.GetList());
+					
+					while(Winner == -1 && Who ==1){//While语句测试时用，当真正ai算法开发后可以改if，不改也可
+						player.computerCoor(Who,Mode);
+						if(view.InsertChess(Player.Geta(),Player.Getb(),Who))
+							if((Winner = view.GetWin()) != 0){
+								IsBegin = true;
+								Who =0;		
+							}		
+					}
+				}
 				
-				while(Winner == -1 && Who ==1){//While语句测试时用，当真正ai算法开发后可以改if，不改也可
-					player.computerCoor(Who,Mode);
-					if(view.InsertChess(Player.Geta(),Player.Getb(),Who))
-						if((Winner = view.GetWin()) != 0){
-							IsBegin = true;
-							Who =0;		
-						}
-				}		
 			}//人机模式		
 			if(Mode == 1){				
 				//Who = IsFirst;
@@ -748,11 +815,10 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 				}
 			}//人人对战模式
 		}
-		
+		view.Refresh();
 		Check();
-
-		TipView tv = (TipView)ChessboardActivity.this.findViewById(R.id.tipview);
-		tv.Refresh();
+		
+		tipview.Refresh();
 		if(IsBegin == true){
 			TextView textv = (TextView)this.findViewById(R.id.textView1);
 			textv.setText(null);

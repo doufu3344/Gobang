@@ -9,11 +9,11 @@ import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
@@ -32,9 +32,6 @@ import android.widget.AdapterView.OnItemClickListener;
  */
 @SuppressLint("HandlerLeak")
 public class DeviceListActivity extends Activity {
-    // Debugging
-    private static final String TAG = "DeviceListActivity";
-    private static final boolean D = true;
     
     // Return Intent extra
     public static String EXTRA_DEVICE_ADDRESS = "device_address";
@@ -59,27 +56,19 @@ public class DeviceListActivity extends Activity {
         // Set result CANCELED incase the user backs out
         setResult(Activity.RESULT_CANCELED);
 
-        // Initialize the button to make device discoverable
-        Button discButton = (Button) findViewById(R.id.make_discoverable);
-        discButton.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-            	mBtAdapter = BluetoothAdapter.getDefaultAdapter();
-                if (mBtAdapter.getScanMode() != BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
-                	Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-                	discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
-                	startActivity(discoverableIntent);
-                }
-            }
-        });
-        
         // Initialize the button to perform device discovery
-        Button scanButton = (Button) findViewById(R.id.button_scan);
+        Button scanButton = (Button) findViewById(R.id.button_opent_setting);
         scanButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                doDiscovery();
-                v.setVisibility(View.GONE);
-                Button discButton = (Button) findViewById(R.id.make_discoverable);
-                discButton.setVisibility(View.INVISIBLE);
+            	Intent intent = new Intent("/"); 
+            	ComponentName cm = new ComponentName("com.android.settings","com.android.settings.bluetooth.BluetoothSettings"); 
+            	intent.setComponent(cm); 
+            	intent.setAction("android.intent.action.VIEW"); 
+            	activity.startActivityForResult(intent , 0); 
+                
+            	intent.putExtra(EXTRA_DEVICE_ADDRESS, "go_pair");
+             	setResult(Activity.RESULT_OK, intent);
+            	finish();
             }
         });
         
@@ -135,28 +124,6 @@ public class DeviceListActivity extends Activity {
 
         // Unregister broadcast listeners
         this.unregisterReceiver(mReceiver);
-    }
-
-    /**
-     * Start device discover with the BluetoothAdapter
-     */
-    private void doDiscovery() {
-        if (D) Log.d(TAG, "doDiscovery()");
-
-        // Indicate scanning in the title
-        setProgressBarIndeterminateVisibility(true);
-        setTitle(R.string.scanning);
-
-        // Turn on sub-title for new devices
-        findViewById(R.id.title_new_devices).setVisibility(View.VISIBLE);
-
-        // If we're already discovering, stop it
-        if (mBtAdapter.isDiscovering()) {
-            mBtAdapter.cancelDiscovery();
-        }
-
-        // Request discover from BluetoothAdapter
-        mBtAdapter.startDiscovery();
     }
 
     // The on-click listener for all devices in the ListViews
@@ -227,4 +194,7 @@ public class DeviceListActivity extends Activity {
         }
     };
 
+    
+    
+    
 }

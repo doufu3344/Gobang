@@ -35,6 +35,7 @@
                   android:theme="@android:style/Theme.Dialog"
                   android:configChanges="orientation|keyboardHidden" >
          </activity>
+
     </application>
     
 </manifest>
