@@ -5,13 +5,15 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
 
-import com.df.chessboard.ChessboardACtivity;
+import com.df.chessboard.ChessboardActivity;
 
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -68,7 +70,7 @@ public class BluetoothService {
         mState = state;
 
         // Give the new state to the Handler so the UI Activity can update
-        mHandler.obtainMessage(ChessboardACtivity.MESSAGE_STATE_CHANGE, state, -1).sendToTarget();
+        mHandler.obtainMessage(ChessboardActivity.MESSAGE_STATE_CHANGE, state, -1).sendToTarget();
     }
 
     /**
@@ -140,9 +142,9 @@ public class BluetoothService {
         mConnectedThread.start();
 
         // Send the name of the connected device back to the UI Activity
-        Message msg = mHandler.obtainMessage(ChessboardACtivity.MESSAGE_DEVICE_NAME);
+        Message msg = mHandler.obtainMessage(ChessboardActivity.MESSAGE_DEVICE_NAME);
         Bundle bundle = new Bundle();
-        bundle.putString(ChessboardACtivity.DEVICE_NAME, device.getName());
+        bundle.putString(ChessboardActivity.DEVICE_NAME, device.getName());
         msg.setData(bundle);
         mHandler.sendMessage(msg);
 
@@ -184,9 +186,9 @@ public class BluetoothService {
         setState(STATE_LISTEN);
 
         // Send a failure message back to the Activity
-        Message msg = mHandler.obtainMessage(ChessboardACtivity.MESSAGE_TOAST);
+        Message msg = mHandler.obtainMessage(ChessboardActivity.MESSAGE_TOAST);
         Bundle bundle = new Bundle();
-        bundle.putString(ChessboardACtivity.TOAST, "connect_error");
+        bundle.putString(ChessboardActivity.TOAST, "connect_error");
         msg.setData(bundle);
         mHandler.sendMessage(msg);
     }
@@ -198,9 +200,9 @@ public class BluetoothService {
         setState(STATE_LISTEN);
 
         // Send a failure message back to the Activity
-        Message msg = mHandler.obtainMessage(ChessboardACtivity.MESSAGE_TOAST);
+        Message msg = mHandler.obtainMessage(ChessboardActivity.MESSAGE_TOAST);
         Bundle bundle = new Bundle();
-        bundle.putString(ChessboardACtivity.TOAST, "connection_lost");
+        bundle.putString(ChessboardActivity.TOAST, "connection_lost");
         msg.setData(bundle);
         mHandler.sendMessage(msg);
     }
@@ -287,14 +289,23 @@ public class BluetoothService {
         private final BluetoothSocket mmSocket;
         private final BluetoothDevice mmDevice;
 
-        public ConnectThread(BluetoothDevice device) {
+        @SuppressLint("NewApi")
+		public ConnectThread(BluetoothDevice device) {
             mmDevice = device;
             BluetoothSocket tmp = null;
 
             // Get a BluetoothSocket for a connection with the
             // given BluetoothDevice
             try {
-                tmp = device.createRfcommSocketToServiceRecord(MY_UUID);
+                //tmp = device.createRfcommSocketToServiceRecord(MY_UUID);
+            	//Method m = device.getClass().getMethod("createRfcommSocket", new Class[] {int.class});
+            	//tmp = (BluetoothSocket) m.invoke(device, 1); 
+                int sdk = Integer.parseInt(Build.VERSION.SDK);
+                if (sdk >= 10) {
+                     tmp = device.createInsecureRfcommSocketToServiceRecord(MY_UUID);
+                } else {
+                      tmp = device.createRfcommSocketToServiceRecord(MY_UUID);
+                }
             } catch (IOException e) {
                 Log.e(TAG, "create() failed", e);
             }
@@ -383,7 +394,7 @@ public class BluetoothService {
                     bytes = mmInStream.read(buffer);
 
                     // Send the obtained bytes to the UI Activity
-                    mHandler.obtainMessage(ChessboardACtivity.MESSAGE_READ, bytes, -1, buffer)
+                    mHandler.obtainMessage(ChessboardActivity.MESSAGE_READ, bytes, -1, buffer)
                             .sendToTarget();
                 } catch (IOException e) {
                     Log.e(TAG, "disconnected", e);
@@ -402,7 +413,7 @@ public class BluetoothService {
                 mmOutStream.write(buffer);
 
                 // Share the sent message back to the UI Activity
-                mHandler.obtainMessage(ChessboardACtivity.MESSAGE_WRITE, -1, -1, buffer)
+                mHandler.obtainMessage(ChessboardActivity.MESSAGE_WRITE, -1, -1, buffer)
                         .sendToTarget();
             } catch (IOException e) {
                 Log.e(TAG, "Exception during write", e);

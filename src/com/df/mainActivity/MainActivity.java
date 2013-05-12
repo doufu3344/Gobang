@@ -1,6 +1,6 @@
 package com.df.mainActivity;
 
-import com.df.chessboard.ChessboardACtivity;
+import com.df.chessboard.ChessboardActivity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -38,19 +38,19 @@ public class MainActivity extends Activity implements OnClickListener{
 	public void onClick(View v) {
 
 		if(v == btn_hum_com){
-			Intent hum_comIntent = new Intent(MainActivity.this, ChessboardACtivity.class);
+			Intent hum_comIntent = new Intent(MainActivity.this, ChessboardActivity.class);
 			hum_comIntent.setFlags(0);
 			startActivity(hum_comIntent);
 		}
 			
 		if(v == btn_hum_bluet){
-			Intent hum_bluet = new Intent(MainActivity.this, ChessboardACtivity.class);
+			Intent hum_bluet = new Intent(MainActivity.this, ChessboardActivity.class);
 			hum_bluet.setFlags(1);
 			startActivity(hum_bluet);
 		}
 		
 		if(v == btn_hum_two){
-			Intent hum_two = new Intent(MainActivity.this, ChessboardACtivity.class);
+			Intent hum_two = new Intent(MainActivity.this, ChessboardActivity.class);
 			hum_two.setFlags(2);
 			startActivity(hum_two);
 		}
