@@ -325,8 +325,10 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 			view.InsertChess(a,b,who);
 			view.Refresh();
 			if((Winner = view.GetWin()) != 0){
-				IsBegin = true;
-				
+				IsBegin = true;	
+			}
+			else if(Winner != -1){
+				IsRun = false;
 			}
 			Check();
 			
@@ -403,6 +405,7 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 				time_black.setText(null);time_white.setText(null);
 				IsRun = false;
 				timer.cancel();
+				Who = 0;
 				Toast.makeText(ChessboardActivity.this, getString(R.string.quit_toast), Toast.LENGTH_LONG).show();
 				finish();
 			}
@@ -567,6 +570,7 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				dialog.dismiss();
+				Who = 0;
 				timer.cancel();
 				IsRun = false;
 				t_black = 0;t_white = 0;
@@ -643,6 +647,7 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 								sendMessage(str);
 							}
 							IsRun = false;
+							Who = 0;
 							timer.cancel();
 							t_black = 0;t_white = 0;
 							final TextView time_black = (TextView)ChessboardActivity.this.findViewById(R.id.blacktime);
@@ -725,17 +730,21 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 				
 		if( Winner==-1){//游戏仍在进行没有结束
 			if(Mode == 0){
+				if(one)
+					Who = 0;
 				if(Who==0){
 					if(view.InsertChess(event.getRawX(),event.getRawY(),Who)){
-						if(one)
+						if(one){
 							IsRun = true;
+							one = false;
+						}
 						if((Winner = view.GetWin()) != 0){
 							IsBegin = true;
 							Who =1;
 						}
 					}
 				}
-				else if(Who == 1){
+				else if(Who == 1 && !one){
 					Player player = new Player();
 					player.SetList(view.GetList());
 					
@@ -755,9 +764,10 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 				if(IsFirst==0 && Who == 0){
 
 					if(view.InsertChess(event.getRawX(),event.getRawY(),Who)){
-						if(one)
+						if(one){
 							IsRun = true;
-						one = false;
+							one = false;
+						}
 						int a = view.Coor2SubX(event.getRawX());
 						int b = view.Coor2SubY(event.getRawY());				
 						String sa = "";
@@ -829,6 +839,7 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 	
 	private void Check(){
 		if(Winner != -1 && IsTip ==0 && Look != 1){//显示结果对话框
+			IsRun = false;
 			String win;
 			if(Winner == 0)
 				win = this.getString(R.string.win_black);
@@ -867,7 +878,7 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 						one = true;
 						btn_replay.setVisibility(View.INVISIBLE);
 						t_black = 0;t_white = 0;
-						IsRun = true;
+						IsRun = false;
 						final TextView time_black = (TextView)ChessboardActivity.this.findViewById(R.id.blacktime);
 						final TextView time_white = (TextView)ChessboardActivity.this.findViewById(R.id.whitetime);
 						time_black.setText(null);time_white.setText(null);

@@ -12,11 +12,11 @@ public class computer {
 		
 		valueEvaluate value = new valueEvaluate();
 
-		try {
+		/*try {
 		    Thread.sleep(2000);
 		}catch(InterruptedException e)
 		{
-		}
+		}*/
 	
 		for(int i=0;i<15;++i)
 			for(int j=0;j<15;++j){
