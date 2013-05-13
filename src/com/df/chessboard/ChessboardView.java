@@ -7,10 +7,13 @@ import com.df.mainActivity.R;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.util.AttributeSet;
@@ -196,16 +199,32 @@ public class ChessboardView extends View{
 			return false;
 	}
 
+	Bitmap chess_black = BitmapFactory.decodeResource(getResources(), R.drawable.chess_black);
+	Bitmap chess_white = BitmapFactory.decodeResource(getResources(), R.drawable.chess_white);
 	public void DrawChess(Canvas canvas){//画棋子
-		for (Chess ch : chess){
+		/*
+		for (Chess ch : chess){//直接画黑白颜色棋子
 			if(ch.getId() == 1)
 				paint.setColor(Color.WHITE);
 			if(ch.getId() == 0)
 				paint.setColor(Color.BLACK);
 			float x = Sub2CoorX(ch.getX());
 			float y = Sub2CoorY(ch.getY());
+			
 			canvas.drawCircle(x, y, pointSize/2, paint);
-		}			
+		}
+		*/	
+		for (Chess ch : chess){//调用图片resource化棋子
+			int x = (int)Sub2CoorX(ch.getX());
+			int y = (int)Sub2CoorY(ch.getY());
+			int tmp = pointSize/2;
+			Rect rect1 = new Rect(x-tmp,y-tmp,x+tmp,y+tmp);
+			paint.setAntiAlias(true);			
+			if(ch.getId() == 0)
+				canvas.drawBitmap(chess_black, null, rect1, null);
+			else if(ch.getId() == 1)
+				canvas.drawBitmap(chess_white, null, rect1, null);
+		}
 	}
 
 	private float Sub2CoorX(int a){//脚标转坐标

@@ -34,7 +34,7 @@ import android.widget.Toast;
 public class ChessboardActivity extends Activity implements OnClickListener{
 
 	private static final String TAG = "ChessboardActivity";
-    private static final boolean D = true;	
+    private static final boolean D = false;	
 	
 	private static int Who;//当前下棋人
 	private static int Winner;//胜出者
@@ -89,8 +89,10 @@ public class ChessboardActivity extends Activity implements OnClickListener{
         mTitle.setText(R.string.app_name);
         mTitle = (TextView) findViewById(R.id.title_right_text);
 		
-		
-		Who = IsFirst;
+		if(Mode == 1)
+			Who = IsFirst;
+		else
+			Who = 0;
 		Winner = -1;
 		IsTip =0;
 		Look = 0;
@@ -648,6 +650,7 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 							}
 							IsRun = false;
 							Who = 0;
+							one = true;
 							timer.cancel();
 							t_black = 0;t_white = 0;
 							final TextView time_black = (TextView)ChessboardActivity.this.findViewById(R.id.blacktime);
@@ -816,6 +819,10 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 				}
 			}
 			if(Mode == 2){
+				if(one){
+					Who = 0;
+					one = false;
+				}
 				if(view.InsertChess(event.getRawX(),event.getRawY(),Who)){
 					if(one)
 						IsRun = true;
