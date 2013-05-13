@@ -27,6 +27,7 @@
         
         <activity
             android:name="com.df.chessboard.ChessboardActivity"
+            android:theme="@style/titlebarstyle"
             android:label="@string/app_name" >
         </activity>
         
