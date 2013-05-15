@@ -8,30 +8,35 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 public class MainActivity extends Activity implements OnClickListener{
 
-	private Button btn_hum_com;
-	private Button btn_hum_bluet;
-	private Button btn_hum_two;
-	private Button btn_exit;
+	private ImageButton btn_hum_com;
+	private ImageButton btn_hum_bluet;
+	private ImageButton btn_hum_two;
+	private ImageButton btn_exit;
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
      
-        btn_hum_com = (Button)findViewById(R.id.btn_hum_com);
-        btn_hum_bluet = (Button)findViewById(R.id.btn_hum_bluet);
-        btn_hum_two = (Button)findViewById(R.id.btn_hum_two);
-        btn_exit = (Button)findViewById(R.id.btn_exit);
+        btn_hum_com = (ImageButton)findViewById(R.id.btn_hum_com);
+        btn_hum_bluet = (ImageButton)findViewById(R.id.btn_hum_bluet);
+        btn_hum_two = (ImageButton)findViewById(R.id.btn_hum_two);
+        btn_exit = (ImageButton)findViewById(R.id.btn_exit);
         
         btn_hum_com.setOnClickListener(this);
         btn_hum_bluet.setOnClickListener(this);
         btn_hum_two.setOnClickListener(this);
         btn_exit.setOnClickListener(this);
+            
+        SoundPlayer.init(this);
+        SoundPlayer.startMusic();
 	}
 	
 	@Override
@@ -74,4 +79,31 @@ public class MainActivity extends Activity implements OnClickListener{
 				dialog.show();
 		}
 	}
+
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        menu.clear();
+        if(SoundPlayer.isMusicSt())
+        	menu.add(0, 0, 0, R.string.music_off);
+        else
+        	menu.add(0, 0, 0, R.string.music_on);
+        return true;
+     }
+	
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == 0){
+        	if(SoundPlayer.isMusicSt()){
+        		SoundPlayer.setMusicSt(false);
+        	}
+        	else{
+        		SoundPlayer.init(this);
+        		SoundPlayer.setMusicSt(true);
+        		SoundPlayer.startMusic();
+        	}
+            return true;
+        }
+        return false;
+    }
+
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.df.mainActivity.R;
+import com.df.mainActivity.SoundPlayer;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -14,8 +15,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.media.AudioManager;
-import android.media.SoundPool;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
@@ -29,15 +28,10 @@ public class ChessboardView extends View{
     private static int pointSize;//棋盘网格大小
 	private int whowin=-1;//赢棋人
     private static int Top,Left;
-    private Paint paint = new Paint();
-
-    private SoundPool pool;
-    private final int sourceid;
+    private Paint paint = new Paint(); 
     
     public ChessboardView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		pool = new SoundPool(10, AudioManager.STREAM_SYSTEM, 5);
-		sourceid = pool.load(context, R.raw.chess, 0);
 	}
 
 	@SuppressLint("DrawAllocation")
@@ -184,11 +178,13 @@ public class ChessboardView extends View{
 		return false;
     }
 	private void playSound(){
-		//播放音频，第二个参数为左声道音量;
+		/*		//播放音频，第二个参数为左声道音量;
 		//第三个参数为右声道音量;第四个参数为优先级；
 		//第五个参数为循环次数:0不循环，-1循环;
 		//第六个参数为速率，速率最低0.5最高为2，1代表正常速度  
         pool.play(sourceid, (float)0.5, (float)0.5, 0, 0, 1);
+        //*/
+		SoundPlayer.playSound();
 	}
 	private boolean IsChess(int a, int b,int id){
 		if(a>=0 && a<maxX && b>=0 && b<maxY){

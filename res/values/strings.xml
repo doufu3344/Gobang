@@ -62,5 +62,10 @@
     <string name="set_first_ti">Set First</string>
     <string name="is_you_first">Set you go First?</string>
 	<string name="set_other_first">You have set the other go first</string>
+	<string name="music_on">Turn on music</string>
+	<string name="music_off">Turn off music</string>
+	<string name="sound_on">Turn on sound</string>
+	<string name="sound_off">Turn off sound</string>
+	<string name="main_menu_button">menu button</string>
 	<string name="power">Power By doufu3344</string>
 </resources>

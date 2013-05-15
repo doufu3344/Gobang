@@ -10,21 +10,27 @@
         android:layout_height="wrap_content"
         android:background="#2Fff7700" />
 
-    <Button
+    <ImageButton
         android:id="@+id/undo"
+        style="@drawable/button_undo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/view1"
         android:layout_alignParentBottom="true"
-        android:text="@string/undo" />
+		android:background="@drawable/buttonstyle" 
+		android:src="@drawable/button_undo"
+        android:contentDescription="@string/main_menu_button" />
 
-    <Button
+    <ImageButton
         android:id="@+id/back"
+        style="@drawable/button_back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignRight="@+id/view1"
-        android:text="@string/back" />
+        android:background="@drawable/buttonstyle"
+        android:contentDescription="@string/main_menu_button"
+        android:src="@drawable/button_back" />
 
     <com.df.chessboard.TipView
         android:id="@+id/tipview"
@@ -32,7 +38,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/view1"
         android:layout_centerHorizontal="true"
-        android:background="#1F0000FF" />
+        android:background="#3F0000FF" />
 
     <TextView
         android:id="@+id/textView1"
@@ -46,29 +52,32 @@
         android:layout_centerHorizontal="true"
         android:text="@string/touch_begin"/>
     
-     <Button
+     <ImageButton
         android:id="@+id/replay"
+        style="@drawable/button_replay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:text="@string/replay" />
-
-     <TextView
-         android:id="@+id/blacktime"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:layout_alignLeft="@+id/tipview"
-         android:layout_below="@+id/tipview"
-         android:text=""
-         android:textAppearance="?android:attr/textAppearanceMedium" />
+		android:background="@drawable/buttonstyle"
+		android:contentDescription="@string/main_menu_button"    
+        android:src="@drawable/button_replay" />
 
      <TextView
          android:id="@+id/whitetime"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:layout_alignRight="@+id/tipview"
-         android:layout_below="@+id/tipview"
+         android:layout_alignTop="@+id/tipview"
+         android:layout_toLeftOf="@+id/tipview"
+         android:text=""
+         android:textAppearance="?android:attr/textAppearanceMedium" />
+
+     <TextView
+         android:id="@+id/blacktime"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignTop="@+id/tipview"
+         android:layout_toRightOf="@+id/tipview"
          android:text=""
          android:textAppearance="?android:attr/textAppearanceMedium" />
 

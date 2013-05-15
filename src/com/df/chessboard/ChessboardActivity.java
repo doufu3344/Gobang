@@ -6,6 +6,7 @@ import java.util.TimerTask;
 
 import com.df.bluetooth.BluetoothService;
 import com.df.mainActivity.R;
+import com.df.mainActivity.SoundPlayer;
 import com.df.player.Player;
 
 import android.os.Bundle;
@@ -17,11 +18,13 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.app.AlertDialog.Builder;
 import android.bluetooth.BluetoothAdapter;
@@ -46,7 +49,7 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 	public static int Look = 0;//1-查看棋盘
 	public static int IsTip = 0;//比赛结果对话框，设置此标记解决显示两次的问题。1已经提示，0未提示
 	public static int who_undo = 0;
-	private Button btn_undo,btn_back,btn_replay;
+	private ImageButton btn_undo,btn_back,btn_replay;
 	
     private static final int REQUEST_CONNECT_DEVICE = 1;
     private static final int REQUEST_ENABLE_BT = 2;
@@ -98,11 +101,11 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 		Look = 0;
 		one = true;
 	
-		btn_undo = (Button) this.findViewById(R.id.undo);
-		btn_back = (Button) this.findViewById(R.id.back);
+		btn_undo = (ImageButton) this.findViewById(R.id.undo);
+		btn_back = (ImageButton) this.findViewById(R.id.back);
 		btn_undo.setOnClickListener(this);
 		btn_back.setOnClickListener(this);
-		btn_replay = (Button) this.findViewById(R.id.replay);
+		btn_replay = (ImageButton) this.findViewById(R.id.replay);
 		btn_replay.setOnClickListener(this);
 		btn_replay.setVisibility(View.INVISIBLE);
 		
@@ -132,7 +135,7 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 			TipView tv = (TipView)this.findViewById(R.id.tipview);
 			tv.SetMode(Mode);
 			
-			btn_replay.setText(R.string.giveup);
+			//btn_replay.setText(R.string.giveup);
 			
 	        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 	        
@@ -933,4 +936,47 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 			return min+":"+sec;
 		}
 	}
+
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        menu.clear();
+        if(SoundPlayer.isMusicSt())
+        	menu.add(0, 1, 0, R.string.music_off);
+        else
+        	menu.add(0, 1, 0, R.string.music_on);
+        if(SoundPlayer.isSoundSt())
+        	menu.add(0, 2, 0, R.string.sound_off);
+        else
+        	menu.add(0, 2, 0, R.string.sound_on);
+        
+        return true;
+     }
+	
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+    	boolean D = false;
+    	if(item.getItemId() == 1){
+        	if(SoundPlayer.isMusicSt()){
+        		SoundPlayer.setMusicSt(false);
+        		if(D) Log.d("MainActivity","+++"+SoundPlayer.isMusicSt()+"+++");
+        	}
+        	else{
+        		SoundPlayer.init(this);
+        		SoundPlayer.setMusicSt(true);
+        		SoundPlayer.startMusic();
+        		if(D) Log.d("MainActivity","+++"+SoundPlayer.isMusicSt()+"+++");
+        	}
+            return true;
+    	}
+    	else if(item.getItemId() == 2){
+        	if(SoundPlayer.isSoundSt()){
+        		SoundPlayer.setSoundSt(false);
+        	}
+        	else{
+        		SoundPlayer.setSoundSt(true);
+        	}
+            return true;
+        }
+        return false;
+    }
 }

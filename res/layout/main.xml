@@ -2,66 +2,59 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/bg_board" >
+    android:background="@drawable/bg_main" >
 
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="25dp"
-        android:text="@string/select"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="#000000" />
-
-    <Button
+	<ImageButton
         android:id="@+id/btn_hum_com"
+        style="@drawable/menu_hum_and"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textView1"
+        android:layout_above="@+id/btn_hum_two"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="30dp"
-        android:text="@string/hum_com"
-        android:width="200dp" />
-
-    <Button
-        android:id="@+id/btn_hum_bluet"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/btn_hum_com"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="30dp"
-        android:text="@string/hum_hum_blue"
-        android:width="200dp" />
-
-    <Button
+        android:background="@drawable/menustyle"
+        android:src="@drawable/menu_hum_and"
+        android:contentDescription="@string/main_menu_button" />
+        
+    <ImageButton
         android:id="@+id/btn_hum_two"
+		style="@drawable/menu_hum_hum"  
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@drawable/menustyle"
+        android:src="@drawable/menu_hum_hum"
+        android:contentDescription="@string/main_menu_button" />
+
+    <ImageButton
+        android:id="@+id/btn_hum_bluet"
+		style="@drawable/menu_hum_blue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btn_hum_two"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/menustyle"
+        android:src="@drawable/menu_hum_blue"
+        android:contentDescription="@string/main_menu_button" />
+
+    <ImageButton
+        android:id="@+id/btn_exit"
+		style="@drawable/menu_exit"     
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/btn_hum_bluet"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="30dp"
-        android:text="@string/hum_hum"
-        android:width="200dp" />
+        android:background="@drawable/menustyle"
+        android:src="@drawable/menu_exit"
+        android:contentDescription="@string/main_menu_button" />
 
-        <Button
-            android:id="@+id/btn_exit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/btn_hum_two"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="30dp"
-            android:text="@string/exit"
-            android:width="200dp" />
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btn_hum_com"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="10dip"
+        android:src="@drawable/banner"
+        android:contentDescription="@string/main_menu_button" />
 
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:text="@string/power"
-            android:textSize="18sp" />
-    
 </RelativeLayout>

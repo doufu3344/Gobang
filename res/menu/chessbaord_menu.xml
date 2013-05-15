@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/music_switch"
+          android:title="@string/music_off" />
+    <item android:id="@+id/sound_switch"
+          android:title="@string/sound_off" />
+</menu>
