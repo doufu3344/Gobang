@@ -32,6 +32,7 @@ public class ChessboardView extends View{
     
     public ChessboardView(Context context, AttributeSet attrs) {
 		super(context, attrs);
+		whowin=-1;
 	}
 
 	@SuppressLint("DrawAllocation")
@@ -354,10 +355,6 @@ public class ChessboardView extends View{
     	
     }
     
-    public int SetWhowin(){
-    	whowin=-1;
-    	return whowin;
-    }
     public int[] GetMaxXY(){
     	int [] mxy= new int[]{maxX,maxY};
     	return mxy;

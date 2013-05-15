@@ -1,6 +1,5 @@
 package com.df.chessboard;
 
-import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -134,9 +133,7 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 			
 			TipView tv = (TipView)this.findViewById(R.id.tipview);
 			tv.SetMode(Mode);
-			
-			//btn_replay.setText(R.string.giveup);
-			
+						
 	        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 	        
 	        if (mBluetoothAdapter == null) {
@@ -275,12 +272,17 @@ public class ChessboardActivity extends Activity implements OnClickListener{
            		
                 String thisname = BluetoothAdapter.getDefaultAdapter().getName();
                 
+                if(D) Log.d(TAG,"+++thisname:"+thisname+"++++");
+                if(D) Log.d(TAG,"+++connectedname:"+mConnectedDeviceName+"++++");
                 if(mConnectedDeviceName.compareTo(thisname)<0)
            			IsFirst = 0;
            		else
            			IsFirst = 1;
         		
-                if(D) Log.d(TAG,"+++IsFirst:"+String.valueOf(IsFirst)+"++++");
+                if(D){
+                	Log.d(TAG,"+++IsFirst:"+String.valueOf(IsFirst)+"++++");
+                	Toast.makeText(getApplicationContext(), "IsFirst:"+String.valueOf(IsFirst),Toast.LENGTH_SHORT).show();;
+                }
 
                 setFirst();
                 break;
@@ -319,7 +321,7 @@ public class ChessboardActivity extends Activity implements OnClickListener{
         if(D)
         	Toast.makeText(getApplicationContext(), message_read, Toast.LENGTH_SHORT).show();
 
-    	if(message_read.length()==19){
+    	if(message_read.length()==19){//playing,message length 19 is "who(1)-x(2)-y(2)-blacktime(5)-whitetime(5)"= 19
 			String data[] = new String[5];
 			data = message_read.split("-", 5);
 			int who = Integer.parseInt(data[0]);
@@ -416,10 +418,8 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 			}
 			else if(a == 1111){//replay
 				IsTip =0;
-				Winner = -1;
 				Look = 0;
 				IsBegin = false;
-				Who = IsFirst;
 				ChessboardView view= (ChessboardView) ChessboardActivity.this.findViewById(R.id.view1);
 				view.Initboard();
 				btn_replay.setVisibility(View.INVISIBLE);
@@ -433,6 +433,10 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 				time_black.setText(null);time_white.setText(null);
 				IsRun = false;
 				Toast.makeText(ChessboardActivity.this, R.string.replay_tip, Toast.LENGTH_LONG).show();
+				if(dialog.isShowing())
+					dialog.cancel();
+				setFirst();
+				Who = IsFirst;
 			}
 		}
 		else if(message_read.length()==4){//先后手
@@ -448,42 +452,23 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 			}
 			
 		}
-		else if(message_read.length()==1){
+		else if(message_read.length()==1){//我不知道干啥的
 			if(message_read.equals("1")){
 				setFirst();			
 			}
 		}
     }
 
-    private void setFirst(){
-		if(D) Log.d(TAG, "+++set Isfirst  OUTOUTOUT  ++++");
-		try {
-		    Thread.sleep(1000);
-		    if(D) Log.d(TAG,"+++sleep 1s++++");
-		}catch(InterruptedException e)
-		{
-			if(D) Log.d(TAG,"+++sleep 1s ferror++++");
-		}
-		if(IsFirst == 1){
-			/*Dialog dialogA = new AlertDialog.Builder(this).
-	    			setIcon(android.R.drawable.btn_star).setTitle(R.string.set_first_ti).setMessage(R.string.is_you_first).
-	    			setPositiveButton(R.string.quit_yes, new DialogInterface.OnClickListener(){
-	    				@Override
-	    				public void onClick(DialogInterface dialog, int which) {
-	    					
-	    				}
-	    			}).
-	    			setNegativeButton(R.string.quit_no, new DialogInterface.OnClickListener() {
-	    				@Override
-	    				public void onClick(DialogInterface dialog, int which) {
+    private void setFirst(){//set first to play
 
-	    				}
-	    		}).create();
-	    		dialogA.show();*/
-			if(D) Log.d(TAG, "+++set Isfirst  INININI  ++++");
-			Random ran =new Random(System.currentTimeMillis()); 
-			int a = ran.nextInt(2);
-			if(a == 0){
+    	if(D){
+			Toast.makeText(ChessboardActivity.this, "winner="+String.valueOf(Winner), Toast.LENGTH_LONG).show();
+    	}
+		if(Winner == -1){//just begin
+			if(IsFirst == 1){
+
+				if(D) Log.d(TAG, "+++set Isfirst  INININI  ++++");
+
 				ChessboardActivity.this.sendMessage("0");
 				Dialog dialog = new AlertDialog.Builder(this).
 		    			setIcon(android.R.drawable.btn_star).setTitle(R.string.set_first_ti).setMessage(R.string.is_you_first).
@@ -506,11 +491,38 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 		    				}
 		    		}).create();
 		    		dialog.show();
-			}
-			else{
-				ChessboardActivity.this.sendMessage("1");
+			}//if(IsFirst == 0)
+		}//if(Winner == -1)
+		else{//go gon another new game
+			if(Winner != IsFirst){
+
+				if(D) Log.d(TAG, "+++set Isfirst  INININI  ++++");
+
+				ChessboardActivity.this.sendMessage("0");
+				Dialog dialoga = new AlertDialog.Builder(this).
+		    			setIcon(android.R.drawable.btn_star).setTitle(R.string.set_first_ti).setMessage(R.string.is_you_first).
+		    			setPositiveButton(R.string.quit_yes, new DialogInterface.OnClickListener(){
+		    				@Override
+		    				public void onClick(DialogInterface dialog, int which) {
+		    					Toast.makeText(ChessboardActivity.this, R.string.first_toast, Toast.LENGTH_LONG).show();
+		    					sendMessage("0000");
+		    					IsFirst = 0;
+		    					Who = 0;
+		    				}
+		    			}).
+		    			setNegativeButton(R.string.quit_no, new DialogInterface.OnClickListener() {
+		    				@Override
+		    				public void onClick(DialogInterface dialog, int which) {
+		    					Toast.makeText(ChessboardActivity.this, R.string.set_other_first, Toast.LENGTH_LONG).show();
+		    					sendMessage("1111");
+		    					IsFirst = 1;
+		    					Who = 1;
+		    				}
+		    		}).create();
+		    		dialoga.show();
 			}
 		}
+		Winner = -1;
 	}
 
 	
@@ -822,13 +834,13 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 				}
 			}
 			if(Mode == 2){
+				if(D) Log.d("chessboardabtivity","++++one="+String.valueOf(one));
 				if(one){
 					Who = 0;
 					one = false;
+					IsRun = true;
 				}
 				if(view.InsertChess(event.getRawX(),event.getRawY(),Who)){
-					if(one)
-						IsRun = true;
 					IsBegin = true;
 					if((Winner = view.GetWin()) != 0)
 						Who = Who==0?1:0;
@@ -847,6 +859,7 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 		return true;
 	}
 	
+	Dialog dialog;
 	private void Check(){
 		if(Winner != -1 && IsTip ==0 && Look != 1){//显示结果对话框
 			IsRun = false;
@@ -855,7 +868,7 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 				win = this.getString(R.string.win_black);
 			else
 				win = this.getString(R.string.win_white);
-			Dialog dialog = new AlertDialog.Builder(this).
+			dialog = new AlertDialog.Builder(this).
 				setIcon(android.R.drawable.btn_star).setTitle(R.string.gameover).setMessage(win).
 				setPositiveButton(R.string.watchboard, new DialogInterface.OnClickListener(){
 					@Override//返回棋局查看
@@ -873,6 +886,7 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 				setNegativeButton(R.string.replay, new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
+						Log.d("winner","winner"+String.valueOf(Winner));
 						if(Mode == 1 && Winner != IsFirst)
 							setFirst();
 						if(Mode == 1){
@@ -941,13 +955,13 @@ public class ChessboardActivity extends Activity implements OnClickListener{
         super.onPrepareOptionsMenu(menu);
         menu.clear();
         if(SoundPlayer.isMusicSt())
-        	menu.add(0, 1, 0, R.string.music_off);
+        	menu.add(0, 1, 0, R.string.music_off).setIcon(R.drawable.music_off);
         else
-        	menu.add(0, 1, 0, R.string.music_on);
+        	menu.add(0, 1, 0, R.string.music_on).setIcon(R.drawable.music_on);
         if(SoundPlayer.isSoundSt())
-        	menu.add(0, 2, 0, R.string.sound_off);
+        	menu.add(0, 2, 0, R.string.sound_off).setIcon(R.drawable.music_off);
         else
-        	menu.add(0, 2, 0, R.string.sound_on);
+        	menu.add(0, 2, 0, R.string.sound_on).setIcon(R.drawable.music_on);
         
         return true;
      }

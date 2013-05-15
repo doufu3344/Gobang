@@ -49,7 +49,6 @@
 	<string name="ask_undo_message">同意对方请求悔棋吗？</string>
 	<string name="agree">同意</string>
 	<string name="disagree">不同意</string>
-	<string name="giveup">重玩</string>
 	<string name="agree_toast">对方同意悔棋</string>
 	<string name="disagree_toast">对方不同意悔棋</string>
     <string name="quit_toast">对方已不再游戏</string>
@@ -63,5 +62,7 @@
 	<string name="music_off">关闭音乐</string>
 	<string name="sound_on">打开音效</string>
 	<string name="sound_off">关闭音效</string>
+	<string name="sound_tip">游戏时可以通过菜单关闭声音</string>
+	<string name="press_again">再按一次退出游戏</string>
 	<string name="power">Power By doufu3344</string>
 </resources>

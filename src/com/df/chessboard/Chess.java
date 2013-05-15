@@ -1,9 +1,11 @@
 package com.df.chessboard;
 
+/**
+ * This is chess class
+ */
 public class Chess{
-	private int x;
-	private int y;
-	private int id;
+	private int x, y;//chess's coordinate
+	private int id;//0--black chess;1--white chess;
 	
 	public Chess(int x, int y,int id){
 		this.x = x;

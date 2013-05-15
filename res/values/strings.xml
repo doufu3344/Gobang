@@ -52,7 +52,6 @@
 	<string name="ask_undo_message">the other side ask to undo,agree?</string>
 	<string name="agree">Agree</string>
 	<string name="disagree">Disagree</string>
-	<string name="giveup">Give up</string>
 	<string name="agree_toast">The other side agree to undo</string>
 	<string name="disagree_toast">The other side disgree to undo</string>
     <string name="quit_toast">The other side is not playing</string>
@@ -67,5 +66,7 @@
 	<string name="sound_on">Turn on sound</string>
 	<string name="sound_off">Turn off sound</string>
 	<string name="main_menu_button">menu button</string>
+	<string name="sound_tip">you can press MENU to unable sounds</string>
+	<string name="press_again">press again to quit game</string>
 	<string name="power">Power By doufu3344</string>
 </resources>

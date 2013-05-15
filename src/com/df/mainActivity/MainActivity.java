@@ -2,12 +2,16 @@ package com.df.mainActivity;
 
 import com.df.chessboard.ChessboardActivity;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,6 +19,7 @@ import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+@SuppressLint("HandlerLeak")
 public class MainActivity extends Activity implements OnClickListener{
 
 	private ImageButton btn_hum_com;
@@ -37,6 +42,7 @@ public class MainActivity extends Activity implements OnClickListener{
             
         SoundPlayer.init(this);
         SoundPlayer.startMusic();
+        Toast.makeText(getApplicationContext(), getString(R.string.sound_tip), Toast.LENGTH_SHORT).show();
 	}
 	
 	@Override
@@ -73,20 +79,46 @@ public class MainActivity extends Activity implements OnClickListener{
 					setNegativeButton(R.string.quit_no, new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
-							Toast.makeText(MainActivity.this, R.string.go_on_playing, Toast.LENGTH_LONG).show();
+							Toast.makeText(MainActivity.this, R.string.go_on_playing, Toast.LENGTH_SHORT).show();
 						}
 				}).create();
 				dialog.show();
 		}
 	}
+	
+	boolean isExit=false;
+	Handler mHandler = new Handler(){
+	        @Override
+	        public void handleMessage(Message msg) {
+	            super.handleMessage(msg);
+	            isExit=false;
+	        }
+	};
+	     
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if(keyCode == KeyEvent.KEYCODE_BACK){
+            if(!isExit){
+                isExit=true;
+                Toast.makeText(getApplicationContext(), getString(R.string.press_again), Toast.LENGTH_SHORT).show();
+                mHandler.sendEmptyMessageDelayed(0, 2000);
+            }
+            else{
+            	android.os.Process.killProcess(android.os.Process.myPid());   //获取PID 
+				System.exit(0);
+            }
+        }
+        return false;
+    }
+
 
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
         menu.clear();
         if(SoundPlayer.isMusicSt())
-        	menu.add(0, 0, 0, R.string.music_off);
+        	menu.add(0, 0, 0, R.string.music_off).setIcon(R.drawable.music_off);
         else
-        	menu.add(0, 0, 0, R.string.music_on);
+        	menu.add(0, 0, 0, R.string.music_on).setIcon(R.drawable.music_on);
         return true;
      }
 	
