@@ -145,6 +145,7 @@ public class BluetoothService {
         Message msg = mHandler.obtainMessage(ChessboardActivity.MESSAGE_DEVICE_NAME);
         Bundle bundle = new Bundle();
         bundle.putString(ChessboardActivity.DEVICE_NAME, device.getName());
+        bundle.putString(ChessboardActivity.DEVICE_ADDRESS, device.getAddress());
         msg.setData(bundle);
         mHandler.sendMessage(msg);
 

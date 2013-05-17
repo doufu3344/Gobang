@@ -20,7 +20,8 @@
     <string name="youwin">恭喜，你获胜了！</string>
     <string name="gameover">游戏结束</string>
     <string name="watchboard">查看棋局</string>
-    <string name="replay">重玩</string>
+    <string name="replay">重新开始</string>
+    <string name="giveup">认输</string>
     <string name="replay_confirm">你确定重新开始吗？</string>
     <string name="replay_tip">游戏已重新开始</string>
     <string name="welcome">欢迎</string>
@@ -64,5 +65,6 @@
 	<string name="sound_off">关闭音效</string>
 	<string name="sound_tip">游戏时可以通过菜单关闭声音</string>
 	<string name="press_again">再按一次退出游戏</string>
+	<string name="still_run">程序仍在运行</string>
 	<string name="power">Power By doufu3344</string>
 </resources>

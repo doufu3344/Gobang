@@ -8,9 +8,11 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,10 +24,16 @@ import android.widget.Toast;
 @SuppressLint("HandlerLeak")
 public class MainActivity extends Activity implements OnClickListener{
 
+	private static final String TAG = "MainActivity";
+    private static final boolean D = false;		
+	
 	private ImageButton btn_hum_com;
 	private ImageButton btn_hum_bluet;
 	private ImageButton btn_hum_two;
 	private ImageButton btn_exit;
+	
+	HomeKeyEventBroadCastReceiver receiver;
+	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
@@ -43,7 +51,47 @@ public class MainActivity extends Activity implements OnClickListener{
         SoundPlayer.init(this);
         SoundPlayer.startMusic();
         Toast.makeText(getApplicationContext(), getString(R.string.sound_tip), Toast.LENGTH_SHORT).show();
+        
+        receiver = new HomeKeyEventBroadCastReceiver();  
+        registerReceiver(receiver, new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS));  
 	}
+	
+    @Override
+    public void onStart() {
+    	super.onStart();
+    	if(D) Log.e(TAG, "++ ON START ++");
+    }
+	
+    @Override
+    public synchronized void onPause() {
+    	super.onPause();
+        if(SoundPlayer.isPause())
+        	Toast.makeText(this, getString(R.string.still_run), Toast.LENGTH_LONG).show();  
+        if(D) Log.e(TAG, "- ON PAUSE -");
+    }
+
+   @Override
+    public void onStop() {
+	   super.onStop();
+	   if(D) Log.e(TAG, "-- ON STOP --");
+    }
+
+    @Override
+    public void onDestroy() {
+    	super.onDestroy();
+    	if(D) Log.e(TAG, "--- ON DESTROY ---");
+    }
+    
+    @Override
+    public synchronized void onResume() {
+    	super.onResume();
+    	if(SoundPlayer.isPause()){
+    		SoundPlayer.startMusic();
+    		SoundPlayer.setisPause(false);
+    		Toast.makeText(this, getString(R.string.go_on_playing), Toast.LENGTH_SHORT).show();  
+    	}
+    	if(D) Log.e(TAG, "+ ON RESUME +");
+    }
 	
 	@Override
 	public void onClick(View v) {

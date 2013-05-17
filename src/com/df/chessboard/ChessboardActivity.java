@@ -62,6 +62,7 @@ public class ChessboardActivity extends Activity implements OnClickListener{
     
     // Key names received from the BluetoothChatService Handler
     public static final String DEVICE_NAME = "device_name";
+    public static final String DEVICE_ADDRESS = "device_address";
     public static final String TOAST = "toast";
     
     // Name of the connected device
@@ -74,11 +75,16 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 	private static boolean IsConnect = false;
 
     private TextView mTitle;
-	
+    
+    private TextView b_win_t;
+    private TextView w_win_t;
+    private int blackwint = 0;
+    private int whitewint = 0;
+    
     Timer timer = new Timer();
     Handler handler;
-	int t_black=0;
-	int t_white=0;
+	private int t_black=0;
+	private int t_white=0;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +97,11 @@ public class ChessboardActivity extends Activity implements OnClickListener{
         mTitle.setText(R.string.app_name);
         mTitle = (TextView) findViewById(R.id.title_right_text);
 		
+        b_win_t = (TextView)this.findViewById(R.id.blackwin);
+        w_win_t = (TextView)this.findViewById(R.id.whitewin);
+        blackwint = 0;
+        whitewint = 0;
+        
 		if(Mode == 1)
 			Who = IsFirst;
 		else
@@ -137,7 +148,7 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 	        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 	        
 	        if (mBluetoothAdapter == null) {
-	            Toast.makeText(this, getString(R.string.bluetooth_unavailable), Toast.LENGTH_LONG).show();
+	            Toast.makeText(this, getString(R.string.bluetooth_unavailable), Toast.LENGTH_SHORT).show();
 	            finish();
 	            return;
 	        }
@@ -170,6 +181,8 @@ public class ChessboardActivity extends Activity implements OnClickListener{
     @Override
     public synchronized void onPause() {
     	super.onPause();
+        if(SoundPlayer.isPause())
+        	Toast.makeText(this, getString(R.string.still_run), Toast.LENGTH_SHORT).show();  	
         if(D) Log.e(TAG, "- ON PAUSE -");
     }
 
@@ -193,6 +206,11 @@ public class ChessboardActivity extends Activity implements OnClickListener{
     	super.onResume();
     	if(D) Log.e(TAG, "+ ON RESUME +");
 	
+    	if(SoundPlayer.isPause()){
+    		SoundPlayer.startMusic();
+    		SoundPlayer.setisPause(false);
+    		Toast.makeText(this, getString(R.string.go_on_playing), Toast.LENGTH_SHORT).show();  
+    	}
     	// Performing this check in onResume() covers the case in which BT was
     	// not enabled during onStart(), so we were paused to enable it...
     	// onResume() will be called when ACTION_REQUEST_ENABLE activity returns.
@@ -270,11 +288,12 @@ public class ChessboardActivity extends Activity implements OnClickListener{
                 Toast.makeText(getApplicationContext(), getString(R.string.title_connected_to)
                                + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
            		
-                String thisname = BluetoothAdapter.getDefaultAdapter().getName();
+                String thisaddress = BluetoothAdapter.getDefaultAdapter().getAddress();
+                String connectaddress = msg.getData().getString(DEVICE_ADDRESS);
                 
-                if(D) Log.d(TAG,"+++thisname:"+thisname+"++++");
+                if(D) Log.d(TAG,"+++thisname:"+thisaddress+"++++");
                 if(D) Log.d(TAG,"+++connectedname:"+mConnectedDeviceName+"++++");
-                if(mConnectedDeviceName.compareTo(thisname)<0)
+                if(connectaddress.compareTo(thisaddress)<0)
            			IsFirst = 0;
            		else
            			IsFirst = 1;
@@ -368,12 +387,12 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 			final int who = Integer.parseInt(data[0]);
 			int a = Integer.parseInt(data[1]);
 			if(a == 000){//同意悔棋
-				Toast.makeText(ChessboardActivity.this, getString(R.string.agree_toast), Toast.LENGTH_LONG).show();
+				Toast.makeText(ChessboardActivity.this, getString(R.string.agree_toast), Toast.LENGTH_SHORT).show();
 				ChessboardView view = (ChessboardView)ChessboardActivity.this.findViewById(R.id.view1);
 				Who = view.undo(IsFirst);
 			}
 			else if(a == 111){//不同意
-				Toast.makeText(ChessboardActivity.this,  getString(R.string.disagree_toast), Toast.LENGTH_LONG).show();
+				Toast.makeText(ChessboardActivity.this,  getString(R.string.disagree_toast), Toast.LENGTH_SHORT).show();
 			}
 			else if( a == 100){//要求悔棋
 				Dialog dialog = new AlertDialog.Builder(this).
@@ -413,7 +432,7 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 				IsRun = false;
 				timer.cancel();
 				Who = 0;
-				Toast.makeText(ChessboardActivity.this, getString(R.string.quit_toast), Toast.LENGTH_LONG).show();
+				Toast.makeText(ChessboardActivity.this, getString(R.string.quit_toast), Toast.LENGTH_SHORT).show();
 				finish();
 			}
 			else if(a == 1111){//replay
@@ -432,9 +451,35 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 				t_black = 0;t_white = 0;
 				time_black.setText(null);time_white.setText(null);
 				IsRun = false;
-				Toast.makeText(ChessboardActivity.this, R.string.replay_tip, Toast.LENGTH_LONG).show();
-				if(dialog.isShowing())
+				Toast.makeText(ChessboardActivity.this, R.string.replay_tip, Toast.LENGTH_SHORT).show();
+				if(dialog!=null && dialog.isShowing())
 					dialog.cancel();
+				setFirst();
+				Who = IsFirst;
+			}
+			else if(a == 3333){//giveup
+				if(IsFirst == 0)
+					blackwint++;
+				else
+					whitewint++;
+				b_win_t.setText(String.valueOf(blackwint));
+				w_win_t.setText(String.valueOf(whitewint));
+				IsTip =0;
+				Look = 0;
+				IsBegin = false;
+				ChessboardView view= (ChessboardView) ChessboardActivity.this.findViewById(R.id.view1);
+				view.Initboard();
+				btn_replay.setVisibility(View.INVISIBLE);
+				message_read = " ";
+				TipView tview= (TipView) ChessboardActivity.this.findViewById(R.id.tipview);
+				tview.SetWho(IsFirst);
+				tview.SetFirst(IsFirst);
+				tview.Refresh();
+				one = true;
+				t_black = 0;t_white = 0;
+				time_black.setText(null);time_white.setText(null);
+				IsRun = false;
+				Toast.makeText(ChessboardActivity.this, R.string.replay_tip, Toast.LENGTH_SHORT).show();
 				setFirst();
 				Who = IsFirst;
 			}
@@ -443,12 +488,12 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 			if(message_read.equals("1111")){//对方设置我为先手
 				IsFirst = 0;
 				Who = 0;
-				Toast.makeText(ChessboardActivity.this, R.string.first_toast, Toast.LENGTH_LONG).show();
+				Toast.makeText(ChessboardActivity.this, R.string.first_toast, Toast.LENGTH_SHORT).show();
 			}
 			else if(message_read.equals("0000")){//对方为先手
 				IsFirst = 1;
 				Who = 1;
-				Toast.makeText(ChessboardActivity.this, R.string.second_toast, Toast.LENGTH_LONG).show();
+				Toast.makeText(ChessboardActivity.this, R.string.second_toast, Toast.LENGTH_SHORT).show();
 			}
 			
 		}
@@ -462,7 +507,7 @@ public class ChessboardActivity extends Activity implements OnClickListener{
     private void setFirst(){//set first to play
 
     	if(D){
-			Toast.makeText(ChessboardActivity.this, "winner="+String.valueOf(Winner), Toast.LENGTH_LONG).show();
+			Toast.makeText(ChessboardActivity.this, "winner="+String.valueOf(Winner), Toast.LENGTH_SHORT).show();
     	}
 		if(Winner == -1){//just begin
 			if(IsFirst == 1){
@@ -475,7 +520,7 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 		    			setPositiveButton(R.string.quit_yes, new DialogInterface.OnClickListener(){
 		    				@Override
 		    				public void onClick(DialogInterface dialog, int which) {
-		    					Toast.makeText(ChessboardActivity.this, R.string.first_toast, Toast.LENGTH_LONG).show();
+		    					Toast.makeText(ChessboardActivity.this, R.string.first_toast, Toast.LENGTH_SHORT).show();
 		    					sendMessage("0000");
 		    					IsFirst = 0;
 		    					Who = 0;
@@ -484,7 +529,7 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 		    			setNegativeButton(R.string.quit_no, new DialogInterface.OnClickListener() {
 		    				@Override
 		    				public void onClick(DialogInterface dialog, int which) {
-		    					Toast.makeText(ChessboardActivity.this, R.string.set_other_first, Toast.LENGTH_LONG).show();
+		    					Toast.makeText(ChessboardActivity.this, R.string.set_other_first, Toast.LENGTH_SHORT).show();
 		    					sendMessage("1111");
 		    					IsFirst = 1;
 		    					Who = 1;
@@ -504,7 +549,7 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 		    			setPositiveButton(R.string.quit_yes, new DialogInterface.OnClickListener(){
 		    				@Override
 		    				public void onClick(DialogInterface dialog, int which) {
-		    					Toast.makeText(ChessboardActivity.this, R.string.first_toast, Toast.LENGTH_LONG).show();
+		    					Toast.makeText(ChessboardActivity.this, R.string.first_toast, Toast.LENGTH_SHORT).show();
 		    					sendMessage("0000");
 		    					IsFirst = 0;
 		    					Who = 0;
@@ -513,7 +558,7 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 		    			setNegativeButton(R.string.quit_no, new DialogInterface.OnClickListener() {
 		    				@Override
 		    				public void onClick(DialogInterface dialog, int which) {
-		    					Toast.makeText(ChessboardActivity.this, R.string.set_other_first, Toast.LENGTH_LONG).show();
+		    					Toast.makeText(ChessboardActivity.this, R.string.set_other_first, Toast.LENGTH_SHORT).show();
 		    					sendMessage("1111");
 		    					IsFirst = 1;
 		    					Who = 1;
@@ -547,7 +592,7 @@ public class ChessboardActivity extends Activity implements OnClickListener{
                		
     				Who = IsFirst;
                		
-               		Toast.makeText(ChessboardActivity.this, str, Toast.LENGTH_LONG).show();
+               		Toast.makeText(ChessboardActivity.this, str, Toast.LENGTH_SHORT).show();
                		
                		setFirst();
                	}
@@ -556,7 +601,7 @@ public class ChessboardActivity extends Activity implements OnClickListener{
         			startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
                	}
                	else{
-               		Toast.makeText(ChessboardActivity.this, getString(R.string.reselect_device), Toast.LENGTH_LONG).show();
+               		Toast.makeText(ChessboardActivity.this, getString(R.string.reselect_device), Toast.LENGTH_SHORT).show();
                		finish();
                	}
             }
@@ -601,7 +646,7 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				dialog.dismiss();
-				Toast.makeText(ChessboardActivity.this, R.string.go_on_playing, Toast.LENGTH_LONG).show();
+				Toast.makeText(ChessboardActivity.this, R.string.go_on_playing, Toast.LENGTH_SHORT).show();
 			}
 		});
 		builder.create().show();
@@ -624,7 +669,7 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 				setPositiveButton(R.string.quit_yes, new DialogInterface.OnClickListener(){
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						Toast.makeText(ChessboardActivity.this, R.string.bad_boy,Toast.LENGTH_LONG).show();
+						Toast.makeText(ChessboardActivity.this, R.string.bad_boy,Toast.LENGTH_SHORT).show();
 						ChessboardView view= (ChessboardView)ChessboardActivity.this.findViewById(R.id.view1);
 						
 						if(Mode == 0){
@@ -634,7 +679,7 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 						else if(Mode == 1){
 							who_undo = IsFirst;
 							sendMessage(String.valueOf(who_undo)+"-100");
-							Toast.makeText(ChessboardActivity.this, getString(R.string.wait_agree),Toast.LENGTH_LONG).show();
+							Toast.makeText(ChessboardActivity.this, getString(R.string.wait_agree),Toast.LENGTH_SHORT).show();
 						}
 						else{
 							who_undo = Who==0?1:0;
@@ -648,7 +693,7 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 				setNegativeButton(R.string.quit_no, new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						Toast.makeText(ChessboardActivity.this, R.string.good_boy, Toast.LENGTH_LONG).show();
+						Toast.makeText(ChessboardActivity.this, R.string.good_boy, Toast.LENGTH_SHORT).show();
 					}
 			}).create();
 			dialog.show();
@@ -677,7 +722,7 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 					setNegativeButton(R.string.quit_no, new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
-							Toast.makeText(ChessboardActivity.this, R.string.go_on_playing, Toast.LENGTH_LONG).show();
+							Toast.makeText(ChessboardActivity.this, R.string.go_on_playing, Toast.LENGTH_SHORT).show();
 						}
 				}).create();
 				dialog.show();
@@ -689,6 +734,26 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 				setPositiveButton(R.string.quit_yes, new DialogInterface.OnClickListener(){
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
+						if(isGiveUp)
+						{
+							if(Mode == 0)
+								whitewint++;
+							else if(Mode == 1){
+								if(IsFirst==0)
+									whitewint++;
+								else
+									blackwint++;
+							}
+							else{
+								if(Who==0)
+									whitewint++;
+								else
+									blackwint++;
+							}
+							b_win_t.setText(String.valueOf(blackwint));
+							w_win_t.setText(String.valueOf(whitewint));
+							
+						}
 						IsTip =0;
 						Winner = -1;
 						Look = 0;
@@ -705,7 +770,11 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 						tview.SetFirst(IsFirst);
 						tview.Refresh();
 						if(Mode == 1){
-							String str = String.valueOf(Who)+"-1111";
+							String str;
+							if(isGiveUp)
+								str = String.valueOf(Who)+"-3333";
+							else
+								str = String.valueOf(Who)+"-1111";
 							sendMessage(str);
 						}
 						one = true;
@@ -713,7 +782,8 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 						final TextView time_black = (TextView)ChessboardActivity.this.findViewById(R.id.blacktime);
 						final TextView time_white = (TextView)ChessboardActivity.this.findViewById(R.id.whitetime);
 						time_black.setText(null);time_white.setText(null);
-						Toast.makeText(ChessboardActivity.this, R.string.replay_tip, Toast.LENGTH_LONG).show();
+						Toast.makeText(ChessboardActivity.this, R.string.replay_tip, Toast.LENGTH_SHORT).show();
+						btn_replay.setImageResource(R.drawable.button_giveup);							
 					}
 				}).
 				setNegativeButton(R.string.quit_no, new DialogInterface.OnClickListener() {
@@ -745,11 +815,13 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 		tipview.SetFirst(IsFirst);
 		tipview.SetpointSize(view.GetpointSize());
 		tipview.Refresh();
-				
+			
 		if( Winner==-1){//游戏仍在进行没有结束
 			if(Mode == 0){
-				if(one)
+				if(one){
+					isGiveUp = true;	
 					Who = 0;
+				}
 				if(Who==0){
 					if(view.InsertChess(event.getRawX(),event.getRawY(),Who)){
 						if(one){
@@ -783,6 +855,7 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 
 					if(view.InsertChess(event.getRawX(),event.getRawY(),Who)){
 						if(one){
+							isGiveUp = true;
 							IsRun = true;
 							one = false;
 						}
@@ -839,6 +912,7 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 					Who = 0;
 					one = false;
 					IsRun = true;
+					isGiveUp = true;
 				}
 				if(view.InsertChess(event.getRawX(),event.getRawY(),Who)){
 					IsBegin = true;
@@ -849,8 +923,8 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 		}
 		view.Refresh();
 		Check();
-		
 		tipview.Refresh();
+		
 		if(IsBegin == true){
 			TextView textv = (TextView)this.findViewById(R.id.textView1);
 			textv.setText(null);
@@ -859,21 +933,30 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 		return true;
 	}
 	
-	Dialog dialog;
+	Dialog dialog = null;
+	private boolean isGiveUp = true;
 	private void Check(){
 		if(Winner != -1 && IsTip ==0 && Look != 1){//显示结果对话框
 			IsRun = false;
 			String win;
-			if(Winner == 0)
+			if(Winner == 0){
 				win = this.getString(R.string.win_black);
-			else
+				blackwint++;
+			}
+			else{
 				win = this.getString(R.string.win_white);
+				whitewint++;
+			}
+			b_win_t.setText(String.valueOf(blackwint));
+			w_win_t.setText(String.valueOf(whitewint));
+			
 			dialog = new AlertDialog.Builder(this).
 				setIcon(android.R.drawable.btn_star).setTitle(R.string.gameover).setMessage(win).
 				setPositiveButton(R.string.watchboard, new DialogInterface.OnClickListener(){
 					@Override//返回棋局查看
 					public void onClick(DialogInterface dialog, int which) {
 						Who = 2;
+						isGiveUp = false;
 						IsRun = false;
 						Look =1;
 						IsTip =0;
@@ -881,6 +964,7 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 						message_read = " ";
 						t_black = 0;t_white = 0;
 						btn_undo.setVisibility(View.INVISIBLE);
+						btn_replay.setImageResource(R.drawable.button_replay);
 					}
 				}).
 				setNegativeButton(R.string.replay, new DialogInterface.OnClickListener() {
@@ -903,6 +987,7 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 						btn_replay.setVisibility(View.INVISIBLE);
 						t_black = 0;t_white = 0;
 						IsRun = false;
+						isGiveUp = true;
 						final TextView time_black = (TextView)ChessboardActivity.this.findViewById(R.id.blacktime);
 						final TextView time_white = (TextView)ChessboardActivity.this.findViewById(R.id.whitetime);
 						time_black.setText(null);time_white.setText(null);

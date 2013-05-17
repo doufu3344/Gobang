@@ -13,6 +13,7 @@ public class SoundPlayer {
      
     private static boolean musicSt = true; //音乐开关
     private static boolean soundSt = true; //音效开关
+    private static boolean isPause = false; //音效开关
     private static Context context;
      
     private static final int musicId = R.raw.background;
@@ -48,6 +49,16 @@ public class SoundPlayer {
     		//第六个参数为速率，速率最低0.5最高为2，1代表正常速度  
             soundPool.play(soundId, (float)0.5, (float)0.5, 0, 0, 1);
     }
+    
+    //暂停音乐
+    public static void pauseMusic()
+    {
+        if(isPause)
+            music.pause();
+        else
+        	music.start();
+        	
+    }
  
     //播放音乐
     public static void startMusic()
@@ -57,6 +68,9 @@ public class SoundPlayer {
     }
      
     //设置开关状态
+    public static void setisPause(boolean isPause) {
+        SoundPlayer.isPause = isPause;
+    }
     public static void setMusicSt(boolean musicSt) {
         SoundPlayer.musicSt = musicSt;
         if(musicSt)
@@ -74,5 +88,8 @@ public class SoundPlayer {
     }
     public static boolean isMusicSt() {
         return musicSt;
+    }
+    public static boolean isPause() {
+        return isPause;
     }
 }

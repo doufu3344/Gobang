@@ -54,14 +54,14 @@
     
      <ImageButton
         android:id="@+id/replay"
-        style="@drawable/button_replay"
+        style="@drawable/button_giveup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
 		android:background="@drawable/buttonstyle"
 		android:contentDescription="@string/main_menu_button"    
-        android:src="@drawable/button_replay" />
+        android:src="@drawable/button_giveup" />
 
      <TextView
          android:id="@+id/whitetime"
@@ -80,5 +80,27 @@
          android:layout_toLeftOf="@+id/tipview"
          android:text=""
          android:textAppearance="?android:attr/textAppearanceMedium" />
+
+	<TextView
+	    android:id="@+id/whitewin"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignBottom="@+id/tipview"
+	    android:layout_toRightOf="@+id/tipview"
+	    android:text=""
+	    android:textAppearance="?android:attr/textAppearanceMedium"
+	    android:textColor="#FF0000"
+	    android:textSize="30dip" />
+
+	<TextView
+        android:id="@+id/blackwin"
+		android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/tipview"
+        android:layout_toLeftOf="@+id/tipview"
+        android:text=""
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="#FF0000"
+	    android:textSize="30sp" />
 
 </RelativeLayout>

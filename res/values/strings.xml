@@ -22,8 +22,9 @@
     <string name="youwin">you are the winner!</string>
     <string name="gameover">Gome Over</string>
     <string name="watchboard">Look or Back</string>
+    <string name="giveup">Give up</string>
     <string name="replay">Replay</string>
-    <string name="replay_confirm">Are you sure to replay?</string>
+    <string name="replay_confirm">Are you sure to play again?</string>
     <string name="replay_tip">The game is restarted!</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="welcome">Welcome</string>
@@ -68,5 +69,6 @@
 	<string name="main_menu_button">menu button</string>
 	<string name="sound_tip">you can press MENU to unable sounds</string>
 	<string name="press_again">press again to quit game</string>
+	<string name="still_run">The game is still running</string>
 	<string name="power">Power By doufu3344</string>
 </resources>
