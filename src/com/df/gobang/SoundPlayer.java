@@ -1,5 +1,7 @@
-package com.df.mainActivity;
+package com.df.gobang;
   
+import com.df.gobang.R;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.media.AudioManager;

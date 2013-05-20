@@ -3,10 +3,10 @@ package com.df.chessboard;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.df.gobang.R;
 import com.df.bluetooth.BluetoothService;
-import com.df.mainActivity.R;
-import com.df.mainActivity.SoundPlayer;
-import com.df.player.Player;
+import com.df.computer.computer;
+import com.df.gobang.SoundPlayer;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -43,6 +43,7 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 	private static boolean IsBegin;
 	private static boolean IsRun = false;
 	private static boolean one = true;
+	private static int Level = 1;;//1-简单
 	private static int Mode = 0; //0-人机,1-人人联网,2-人人
 	private static int IsFirst = 0;//0-我先,1-对手先
 	public static int Look = 0;//1-查看棋盘
@@ -86,6 +87,8 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 	private int t_black=0;
 	private int t_white=0;
 	
+	computer computerplayer = new computer();
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -106,6 +109,7 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 			Who = IsFirst;
 		else
 			Who = 0;
+		//player = new Player();
 		Winner = -1;
 		IsTip =0;
 		Look = 0;
@@ -835,12 +839,12 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 					}
 				}
 				else if(Who == 1 && !one){
-					Player player = new Player();
-					player.SetList(view.GetList());
+					//Player player = new Player();
+					computerplayer.SetList(view.GetList());
 					
-					while(Winner == -1 && Who ==1){//While语句测试时用，当真正ai算法开发后可以改if，不改也可
-						player.computerCoor(Who,Mode);
-						if(view.InsertChess(Player.Geta(),Player.Getb(),Who))
+					if(Winner == -1 && Who ==1){
+						computerplayer.SearchAGoodMove(Who,Level);
+						while(view.InsertChess(computerplayer.Geta(),computerplayer.Getb(),Who))
 							if((Winner = view.GetWin()) != 0){
 								IsBegin = true;
 								Who =0;		

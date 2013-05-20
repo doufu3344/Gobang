@@ -1,5 +1,6 @@
-package com.df.mainActivity;
+package com.df.gobang;
 
+import com.df.gobang.R;
 import com.df.chessboard.ChessboardActivity;
 
 import android.annotation.SuppressLint;
@@ -22,9 +23,9 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 @SuppressLint("HandlerLeak")
-public class MainActivity extends Activity implements OnClickListener{
+public class GobangActivity extends Activity implements OnClickListener{
 
-	private static final String TAG = "MainActivity";
+	private static final String TAG = "GobangActivity";
     private static final boolean D = false;		
 	
 	private ImageButton btn_hum_com;
@@ -97,19 +98,19 @@ public class MainActivity extends Activity implements OnClickListener{
 	public void onClick(View v) {
 
 		if(v == btn_hum_com){
-			Intent hum_comIntent = new Intent(MainActivity.this, ChessboardActivity.class);
+			Intent hum_comIntent = new Intent(GobangActivity.this, ChessboardActivity.class);
 			hum_comIntent.setFlags(0);
 			startActivity(hum_comIntent);
 		}
 			
 		if(v == btn_hum_bluet){
-			Intent hum_bluet = new Intent(MainActivity.this, ChessboardActivity.class);
+			Intent hum_bluet = new Intent(GobangActivity.this, ChessboardActivity.class);
 			hum_bluet.setFlags(1);
 			startActivity(hum_bluet);
 		}
 		
 		if(v == btn_hum_two){
-			Intent hum_two = new Intent(MainActivity.this, ChessboardActivity.class);
+			Intent hum_two = new Intent(GobangActivity.this, ChessboardActivity.class);
 			hum_two.setFlags(2);
 			startActivity(hum_two);
 		}
@@ -127,7 +128,7 @@ public class MainActivity extends Activity implements OnClickListener{
 					setNegativeButton(R.string.quit_no, new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
-							Toast.makeText(MainActivity.this, R.string.go_on_playing, Toast.LENGTH_SHORT).show();
+							Toast.makeText(GobangActivity.this, R.string.go_on_playing, Toast.LENGTH_SHORT).show();
 						}
 				}).create();
 				dialog.show();

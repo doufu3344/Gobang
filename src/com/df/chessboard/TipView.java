@@ -1,6 +1,6 @@
 package com.df.chessboard;
 
-import com.df.mainActivity.R;
+import com.df.gobang.R;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

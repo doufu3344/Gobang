@@ -3,8 +3,8 @@ package com.df.chessboard;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.df.mainActivity.R;
-import com.df.mainActivity.SoundPlayer;
+import com.df.gobang.R;
+import com.df.gobang.SoundPlayer;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

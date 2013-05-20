@@ -2,32 +2,32 @@ package com.df.computer;
 
 public class valueEvaluate {
 
-	final private int maxX = 15;
-	final private int maxY = 15;
-	final private int maxLine = 15;
-	final private int maxType = 8;
+	final private static int maxX = 15;
+	final private static int maxY = 15;
+	final private static int maxLine = 15;
+	final private static int maxType = 8;
 
-	final private int Blankpos = 0;
+	final private static int Blankpos = 0;
 	
-	final private int Black = 0;
-	final private int White = 1;
+	final private static int Black = 0;
+	final private static int White = 1;
 	
-	final private int Analyzed = -1;
-	final private int Not_Analyzed = 0;
-	final private int Five = 1;
-	final private int Four_live = 2;
-	final private int Four_sleep = 3;
-	final private int Three_live = 4;
-	final private int Three_sleep = 5;
-	final private int Two_live = 6;
-	final private int Two_sleep = 7;
+	final private static int Analyzed = -1;
+	final private static int Not_Analyzed = 0;
+	final private static int Five = 1;
+	final private static int Four_live = 2;
+	final private static int Four_sleep = 3;
+	final private static int Three_live = 4;
+	final private static int Three_sleep = 5;
+	final private static int Two_live = 6;
+	final private static int Two_sleep = 7;
 
 	
 	int[] LineResult = new int[maxLine];//
 	int[][][] TotalResult = new int[maxX][maxY][4];
-	public int[][] TypeCount = new int[2][maxType];//
+	private int[][] TypeCount = new int[2][maxType];//
 	
-	int[][] PosValue = new int[][]{
+	private int[][] PosValue = new int[][]{
 			{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 			{0,1,1,1,1,1,1,1,1,1,1,1,1,1,0},
 			{0,1,2,2,2,2,2,2,2,2,2,2,2,1,0},
@@ -45,7 +45,7 @@ public class valueEvaluate {
 			{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 		};
 	
-	public int Evaluation(int[][] board, int turnto){
+	public int Evaluate(int[][] board, int turnto){
 
 		for(int i=0; i<2; ++i)
 			for(int j=0; j<maxType; ++j)
@@ -96,99 +96,191 @@ public class valueEvaluate {
 				}//for
 			}
 		
-		if(turnto == White){
-			if(TypeCount[Black][Five]>0)
+		if (turnto == Black)
+		{
+			if (TypeCount[Black][Five]>0)
 				return -9999;
-			if(TypeCount[White][Five]>0)
+			if (TypeCount[White][Five]>0)
 				return 9999;
 		}
-		else{
-			if(TypeCount[Black][Five]>0)
+		else
+		{
+			if (TypeCount[Black][Five]>0)
 				return 9999;
-			if(TypeCount[White][Five]>0)
+			if (TypeCount[White][Five]>0)
 				return -9999;
 		}
-		
-		if(TypeCount[White][Four_sleep]>1)
+		if (TypeCount[White][Four_sleep] > 1)
 			TypeCount[White][Four_live]++;
-		if(TypeCount[Black][Four_sleep]>1)
-			TypeCount[Black][Four_live]++;
-		
-		int WTotalV=0;
-		int BTotalV=0;
-		
-		if(turnto == White){
-			
-			if(TypeCount[Black][Four_live]>0)
-				return -9970;
-			if(TypeCount[Black][Four_sleep]>0)
-				return -9960;
-			if(TypeCount[Black][Three_live]>1)
-				return -9960;
-			if(TypeCount[Black][Three_live]>0)
-				return -9960;
-				
-			if(TypeCount[White][Four_live]>0)
-				return 9990;
-			if(TypeCount[White][Four_sleep]>0)
-				return 9980;
-		
-			if(TypeCount[Black][Three_live]>0)
-				return -9950;
-			if(TypeCount[White][Three_live]>0)
-				return 9940;
-//			if(TypeCount[Black][Three_live]>0 && TypeCount[White][Four_sleep]==0 &&
-//					TypeCount[White][Three_live]==0 && TypeCount[White][Three_sleep]==0)
-//				return -9990;
-			
-			if(TypeCount[White][Three_live]==1)
-				WTotalV +=200;
-			else if(TypeCount[White][Three_live] > 1)
-				WTotalV +=2000;
-			
-			if(TypeCount[Black][Three_live] == 1)
-				BTotalV += 100;
-	//		else if(TypeCount[Black][Three_live] >1)
-	//			BTotalV +=500;
-			
-			if(TypeCount[White][Three_sleep] > 0)
-				WTotalV += TypeCount[White][Three_sleep]*10;
-			if(TypeCount[Black][Three_sleep] > 0)
-				WTotalV += TypeCount[Black][Three_sleep]*10;
-			
-			if(TypeCount[White][Two_live] > 0)
-				WTotalV += TypeCount[White][Two_live]*4;
-			if(TypeCount[White][Two_sleep] > 0)
-				WTotalV += TypeCount[White][Two_live]*4;
-			
-			if(TypeCount[White][Two_sleep] > 0)
-				WTotalV += TypeCount[White][Two_sleep];
-			if(TypeCount[Black][Two_sleep] > 0)
-				WTotalV += TypeCount[Black][Two_sleep];
-		
-		
-		
-		}//if(turnto == White)
-		else{//(turnto == Black)
 
-		}//if(turnto == Black)
+		if (TypeCount[Black][Four_sleep] > 1)
+			TypeCount[Black][Four_live]++;
+
+
+		int WValue=0,BValue=0;
+		if (turnto == Black)
+		{
+
+			if (TypeCount[White][Four_live]>0)//白胜
+			{
+				return 9990;
+			}
+
+			if (TypeCount[White][Four_sleep]>0)//白胜
+			{
+				return 9980;
+			}
+
+			if (TypeCount[Black][Four_live]>0 )//黑胜
+			{
+				return -9970;
+			}
+
+
+			if (TypeCount[Black][Four_sleep]>0 && TypeCount[Black][Three_live]>0)//黑胜
+			{
+				return -9960;
+			}
+
+			if (TypeCount[White][Three_live]>0 && TypeCount[Black][Four_sleep] == 0)
+			{
+				return 9950;
+			}
+
+			if (TypeCount[Black][Three_live] > 1 && 
+				TypeCount[White][Four_sleep] == 0 &&
+				TypeCount[White][Three_live] == 0 &&
+				TypeCount[White][Three_sleep] == 0)
+			{
+				return -9940;
+			}
+
+
+			if (TypeCount[White][Three_live] > 1)
+				WValue += 2000;
+			else{
+				if (TypeCount[White][Three_live]>0)
+					WValue += 200;
+			}
+
+			if (TypeCount[Black][Three_live] > 1)
+				BValue += 500;
+			else{
+				if (TypeCount[Black][Three_live]>0)
+					BValue += 100;
+			}
+
+
+			if (TypeCount[White][Three_sleep]>0)
+				WValue += TypeCount[White][Three_sleep]*10;
+
+			if (TypeCount[Black][Three_sleep]>0)
+				BValue += TypeCount[Black][Three_sleep]*10;
+
+			if (TypeCount[White][Two_live]>0)
+				WValue += TypeCount[White][Two_live]*4;
+
+			if (TypeCount[Black][Two_live]>0)
+				BValue += TypeCount[Black][Two_live]*4;
+
+			if (TypeCount[White][Two_sleep]>0)
+				WValue += TypeCount[White][Two_sleep];
+
+			if (TypeCount[Black][Two_sleep]>0)
+				BValue += TypeCount[Black][Two_sleep];
+
 		
-		for(int i=0; i<maxX; ++i)
-			for(int j=0; j<maxY; ++j){
-				int pos = board[i][j];
-				if(pos != Blankpos){
-					if(pos == Black)
-						BTotalV += PosValue[i][j];
+		}
+		else
+		{
+			if (TypeCount[Black][Four_live]>0)
+			{
+				return 9990;
+			}
+			
+			if (TypeCount[Black][Four_sleep]>0)
+			{
+				return 9980;
+			}
+
+			if (TypeCount[White][Four_live]>0)
+			{
+				return -9970;
+			}
+
+			if (TypeCount[White][Four_sleep]>0 && TypeCount[White][Three_live]>0)
+			{
+				return -9960;
+			}
+
+			if (TypeCount[Black][Three_live]>0 && TypeCount[White][Four_sleep] == 0)
+			{
+				return 9950;
+			}
+
+			if (TypeCount[White][Three_live] > 1 && 
+				TypeCount[Black][Four_sleep] == 0 &&
+				TypeCount[Black][Three_live] == 0 &&
+				TypeCount[Black][Three_sleep] == 0)
+			{
+				return -9940;
+			}
+
+			if (TypeCount[Black][Three_live] > 1)
+				BValue += 2000;
+			else{
+				if (TypeCount[Black][Three_live]>0)
+					BValue += 200;
+			}
+
+			if (TypeCount[White][Three_live] > 1)
+				WValue += 500;
+			else{
+				if (TypeCount[White][Three_live]>0)
+					WValue += 100;
+			}
+
+			
+
+			if (TypeCount[White][Three_sleep]>0)
+				WValue += TypeCount[White][Three_sleep]*10;
+
+			if (TypeCount[Black][Three_sleep]>0)
+				BValue += TypeCount[Black][Three_sleep]*10;
+
+			if (TypeCount[White][Two_live]>0)
+				WValue += TypeCount[White][Two_live]*4;
+
+			if (TypeCount[Black][Two_live]>0)
+				BValue += TypeCount[Black][Two_live]*4;
+
+			if (TypeCount[White][Two_sleep]>0)
+				WValue += TypeCount[White][Two_sleep];
+
+			if (TypeCount[Black][Two_sleep]>0)
+				BValue += TypeCount[Black][Two_sleep];
+
+		}
+
+		for (int i=0; i<maxX; i++)
+			for (int j=0; j<maxY; j++)
+			{
+				int nStoneType = board[i][j];
+				if (nStoneType != Blankpos)
+				{
+					if (nStoneType == 1)
+						BValue += PosValue[i][j];
 					else
-						WTotalV += PosValue[i][j];
+						WValue += PosValue[i][j];
 				}
 			}
-		
-		if(turnto == Black)
-			return BTotalV-WTotalV;
+			
+
+		if (turnto == White)
+			return BValue - WValue;
 		else
-			return WTotalV-BTotalV;
-		
+			return WValue - BValue;
+
 	}
 	
 	private int Ana_Horizon(int board[][],int i, int j){//水平方向

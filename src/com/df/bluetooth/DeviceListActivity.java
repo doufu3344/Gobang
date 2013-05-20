@@ -2,7 +2,7 @@ package com.df.bluetooth;
 
 import java.util.Set;
 
-import com.df.mainActivity.R;
+import com.df.gobang.R;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;

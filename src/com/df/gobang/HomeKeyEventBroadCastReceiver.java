@@ -1,4 +1,4 @@
-package com.df.mainActivity;
+package com.df.gobang;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
