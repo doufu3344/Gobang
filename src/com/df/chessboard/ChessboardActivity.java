@@ -43,7 +43,7 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 	private static boolean IsBegin;
 	private static boolean IsRun = false;
 	private static boolean one = true;
-	private static int Level = 1;;//1-简单
+	private static int Level = 2;;//1-简单
 	private static int Mode = 0; //0-人机,1-人人联网,2-人人
 	private static int IsFirst = 0;//0-我先,1-对手先
 	public static int Look = 0;//1-查看棋盘

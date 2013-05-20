@@ -26,13 +26,15 @@ public class moveGenerator {
 			{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 		};
 	
-	public stonemove  getMoveList(int nPly,int x){
-		return MoveList[nPly][x];
+	public stonemove  getMoveList(int nPly,int i){
+		return MoveList[nPly][i];
 	}
 	public stonemove[]  getMoveListA(int nPly){
 		return MoveList[nPly];
 	}
-
+	public void  setMoveList(int nPly, int i, int score){
+		MoveList[nPly][i].setScore(score);
+	}
 	private int addMove(int nToX, int nToY,int nPly)
 	{
 		MoveList[nPly][moveCount] = new stonemove();
@@ -50,8 +52,8 @@ public class moveGenerator {
 				if (board[i][j] == BlankPos)
 					addMove(i, j, nPly);
 
-		//historyHeuristic history = new historyHeuristic();
-		//history.MergeSort(MoveList[nPly], moveCount, false);
+		historyHeuristic history = new historyHeuristic();
+		history.mergeSort(MoveList[nPly], moveCount, false);
 		return moveCount;
 	}
 }
