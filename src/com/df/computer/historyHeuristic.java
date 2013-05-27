@@ -1,5 +1,7 @@
 package com.df.computer;
 
+import java.util.Random;
+
 public class historyHeuristic {
 	private final static int maxX = 15;
 	private final static int maxY = 15;
@@ -26,6 +28,32 @@ public class historyHeuristic {
 			s += s;
 			mergePass(TargetBuff, source, s, n, type);
 			s += s;
+		}
+		int i;
+		for(i=1; i<n; ++i)
+			if(source[i].getScore() != source[i-1].getScore())
+				break;
+		if( i > 1){
+			Random ran =new Random(System.currentTimeMillis());
+			int tran = ran.nextInt(i);
+			stonemove trans = new stonemove();
+			trans = source[tran];
+			source[tran] = source[0];
+			source[0] = trans;
+			ran =new Random(System.currentTimeMillis());
+		}
+		int j;
+		for(j=n; j>1; --j)
+			if(source[j-1].getScore() != source[j-2].getScore())
+				break;
+		if( j < n ){
+			Random ran =new Random(System.currentTimeMillis());
+			int tran = ran.nextInt(n - j + 1);
+			stonemove trans = new stonemove();
+			trans = source[n-tran-1];
+			source[n-tran-1] = source[0];
+			source[0] = trans;
+			ran =new Random(System.currentTimeMillis());
 		}
 	}
 

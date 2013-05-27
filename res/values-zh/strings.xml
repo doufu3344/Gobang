@@ -66,5 +66,9 @@
 	<string name="sound_tip">游戏时可以通过菜单关闭声音</string>
 	<string name="press_again">再按一次退出游戏</string>
 	<string name="still_run">程序仍在运行</string>
+	<string name="select_level">请选择游戏难度</string>
+	<string name="easy">简单</string>
+	<string name="normal">正常</string>
+	<string name="hard">困难</string>
 	<string name="power">Power By doufu3344</string>
 </resources>

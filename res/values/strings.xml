@@ -70,5 +70,9 @@
 	<string name="sound_tip">you can press MENU to unable sounds</string>
 	<string name="press_again">press again to quit game</string>
 	<string name="still_run">The game is still running</string>
+	<string name="select_level">please select the level</string>
+	<string name="easy">Easy</string>
+	<string name="normal">Normal</string>
+	<string name="hard">Hard</string>
 	<string name="power">Power By doufu3344</string>
 </resources>

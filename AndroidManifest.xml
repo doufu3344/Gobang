@@ -36,6 +36,12 @@
                   android:theme="@android:style/Theme.Dialog"
                   android:configChanges="orientation|keyboardHidden" >
          </activity>
+         
+        <activity android:name="com.df.chessboard.LevelSelectActivity"
+                  android:label="@string/select_level"
+                  android:theme="@android:style/Theme.Dialog"
+                  android:configChanges="orientation|keyboardHidden" >
+         </activity>
 
     </application>
     

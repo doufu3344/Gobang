@@ -43,7 +43,7 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 	private static boolean IsBegin;
 	private static boolean IsRun = false;
 	private static boolean one = true;
-	private static int Level = 2;;//1-简单
+	private static int Level = 1;;//1-简单
 	private static int Mode = 0; //0-人机,1-人人联网,2-人人
 	private static int IsFirst = 0;//0-我先,1-对手先
 	public static int Look = 0;//1-查看棋盘
@@ -53,6 +53,7 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 	
     private static final int REQUEST_CONNECT_DEVICE = 1;
     private static final int REQUEST_ENABLE_BT = 2;
+    private static final int REQUEST_LEVEL = 3;
 
     // Message types sent from the BluetoothChatService Handler
     public static final int MESSAGE_STATE_CHANGE = 1;
@@ -87,7 +88,11 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 	private int t_black=0;
 	private int t_white=0;
 	
-	computer computerplayer = new computer();
+	computer computerplayer;
+
+	public void setlevel(int level){
+		Level = level;
+	}
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -105,11 +110,12 @@ public class ChessboardActivity extends Activity implements OnClickListener{
         blackwint = 0;
         whitewint = 0;
         
-		if(Mode == 1)
+    	Who = 0;
+        if(Mode == 0)
+    		computerplayer = new computer();
+        else if(Mode == 1)
 			Who = IsFirst;
-		else
-			Who = 0;
-		//player = new Player();
+		
 		Winner = -1;
 		IsTip =0;
 		Look = 0;
@@ -144,6 +150,11 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 		
 		Intent intent = getIntent();  
 		Mode = intent.getFlags();
+		
+		if(Mode == 0){
+			Intent levelIntent = new Intent(this, LevelSelectActivity.class);
+			startActivityForResult(levelIntent, REQUEST_LEVEL);
+		}
 		if(Mode ==1){
 			
 			TipView tv = (TipView)this.findViewById(R.id.tipview);
@@ -157,8 +168,8 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 	            return;
 	        }
 
-			Intent serverIntent = new Intent(this, com.df.bluetooth.DeviceListActivity.class);
-			startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
+			Intent listIntent = new Intent(this, com.df.bluetooth.DeviceListActivity.class);
+			startActivityForResult(listIntent, REQUEST_CONNECT_DEVICE);
 		}
 	
 		Time();
@@ -621,9 +632,22 @@ public class ChessboardActivity extends Activity implements OnClickListener{
                 Toast.makeText(this, R.string.bluetooth_unavailable, Toast.LENGTH_SHORT).show();
                 finish();
             }
-            break;
-        }
-		
+            break; 
+		case REQUEST_LEVEL:
+			if (resultCode == Activity.RESULT_OK) {
+				String level = data.getExtras().getString(LevelSelectActivity.EXTRA_LEVEL);
+				if( level.equals("easy")){
+					Level = 1;
+				}
+/*				else if( level.equals("normal")){
+					Level = 2;
+				}
+*/
+				else if( level.equals("hard")){
+					Level = 2;
+				}
+			}
+		}
 		if(D) Log.d(TAG, "+ onActivityResult end +"+String.valueOf(resultCode));
 	}
 	
@@ -787,7 +811,12 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 						final TextView time_white = (TextView)ChessboardActivity.this.findViewById(R.id.whitetime);
 						time_black.setText(null);time_white.setText(null);
 						Toast.makeText(ChessboardActivity.this, R.string.replay_tip, Toast.LENGTH_SHORT).show();
-						btn_replay.setImageResource(R.drawable.button_giveup);							
+						btn_replay.setImageResource(R.drawable.button_giveup);	
+						if(Mode == 0){
+							Intent levelIntent = new Intent(ChessboardActivity.this, LevelSelectActivity.class);
+							startActivityForResult(levelIntent, REQUEST_LEVEL);
+							computerplayer = new computer();
+						}
 					}
 				}).
 				setNegativeButton(R.string.quit_no, new DialogInterface.OnClickListener() {
@@ -997,6 +1026,11 @@ public class ChessboardActivity extends Activity implements OnClickListener{
 						time_black.setText(null);time_white.setText(null);
 						ChessboardView view = (ChessboardView)ChessboardActivity.this.findViewById(R.id.view1);
 						view.Initboard();
+						if(Mode == 0){
+							computerplayer = new computer();
+							Intent levelIntent = new Intent(ChessboardActivity.this, LevelSelectActivity.class);
+							startActivityForResult(levelIntent, REQUEST_LEVEL);
+						}
 					}
 			}).create();
 			dialog.show();
